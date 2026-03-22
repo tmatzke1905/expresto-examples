@@ -145,12 +145,12 @@ export function FeaturePageTemplate({
       <article className="panel">
         <div className="panel__header">
           <h2>Documentation notes</h2>
-          <p>Short curated guidance that keeps the feature aligned with the roadmap and runtime.</p>
+          <p>Short curated guidance grounded in the current runtime and the official expresto-server documentation.</p>
         </div>
 
         <div className="documentation-grid">
           {page.documentation.map(note => (
-            <DocumentationNoteCard key={`${note.reference}-${note.title}`} note={note} />
+            <DocumentationNoteCard key={`${note.referenceUrl}-${note.title}`} note={note} />
           ))}
         </div>
       </article>

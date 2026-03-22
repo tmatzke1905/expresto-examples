@@ -8,7 +8,7 @@ type DocumentationNoteCardProps = {
 export function DocumentationNoteCard({ note }: DocumentationNoteCardProps) {
   return (
     <section className="documentation-card">
-      <DocumentationReference reference={note.reference} />
+      <DocumentationReference label={note.referenceLabel} url={note.referenceUrl} />
       <h3>{note.title}</h3>
       <p>{note.body}</p>
     </section>

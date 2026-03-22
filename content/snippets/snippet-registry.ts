@@ -4,6 +4,10 @@ import liveDemoMessageSnippet from "./contracts/live-demo-message.ts?raw";
 import schedulerClockTickSnippet from "./contracts/scheduler-clock-tick.ts?raw";
 import authControllerLoginSnippet from "./server/auth-controller-login.ts?raw";
 import bootstrapMainSnippet from "./server/bootstrap-main.ts?raw";
+import coreFeatureHooksSnippet from "./server/core-feature-hooks.ts?raw";
+import coreFeatureServicesSnippet from "./server/core-feature-services.ts?raw";
+import demoControllerCoreFeaturesSnippet from "./server/demo-controller-core-features.ts?raw";
+import eventDemoEmitterSnippet from "./server/event-demo-emitter.ts?raw";
 import jwtResponseSnippet from "./server/jwt-response.ts?raw";
 import systemHealthControllerSnippet from "./server/system-health-controller.ts?raw";
 import verifySessionSnippet from "./web/verify-session.ts?raw";
@@ -58,6 +62,26 @@ const snippetRegistry = {
     sourceLabel: "Current implementation",
     code: authControllerLoginSnippet.trim()
   },
+  "controllers.demo-controller": {
+    title: "AP6 runtime demo controller",
+    description:
+      "The AP6 controller combines a public runtime snapshot endpoint with a JWT-protected EventBus trigger.",
+    emphasis: "current",
+    filePath: "apps/server/src/controllers/demo.controller.ts",
+    language: "ts",
+    sourceLabel: "Current implementation",
+    code: demoControllerCoreFeaturesSnippet.trim()
+  },
+  "hooks.registration": {
+    title: "Lifecycle hook registration",
+    description:
+      "AP6 registers concrete initialize, startup, preInit, postInit, and security hooks and records their execution.",
+    emphasis: "current",
+    filePath: "apps/server/src/lib/core-feature-demo.ts",
+    language: "ts",
+    sourceLabel: "Current implementation",
+    code: coreFeatureHooksSnippet.trim()
+  },
   "security.jwt-creation": {
     title: "JWT creation on the server",
     description: "The login handler signs the token and returns the session envelope to the client.",
@@ -76,6 +100,26 @@ const snippetRegistry = {
     language: "ts",
     sourceLabel: "Client flow",
     code: verifySessionSnippet.trim()
+  },
+  "services.registry": {
+    title: "ServiceRegistry demo services",
+    description:
+      "The AP6 startup hook registers in-memory services so the workspace can surface real registry entries.",
+    emphasis: "current",
+    filePath: "apps/server/src/lib/core-feature-demo.ts",
+    language: "ts",
+    sourceLabel: "Current implementation",
+    code: coreFeatureServicesSnippet.trim()
+  },
+  "event-system.emitter": {
+    title: "Protected EventBus emission",
+    description:
+      "The Event System page triggers a JWT-protected handler that emits a typed message through the runtime EventBus.",
+    emphasis: "current",
+    filePath: "apps/server/src/lib/core-feature-demo.ts",
+    language: "ts",
+    sourceLabel: "Current implementation",
+    code: eventDemoEmitterSnippet.trim()
   },
   "contracts.event-bus-demo": {
     title: "Planned payload shape",

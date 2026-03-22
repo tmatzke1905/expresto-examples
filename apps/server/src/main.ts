@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { createServer, type AppConfig } from "expresto-server";
 
+import { bindCoreFeatureRuntime, registerCoreFeatureHooks } from "./lib/core-feature-demo.js";
 import { attachStaticWebApp } from "./lib/static-web.js";
 
 const currentDirectory = dirname(fileURLToPath(import.meta.url));
@@ -23,9 +24,13 @@ async function loadConfig(): Promise<AppConfig> {
 }
 
 async function main(): Promise<void> {
+  registerCoreFeatureHooks();
+
   const config = await loadConfig();
   const runtime = await createServer(config);
   const host = config.host ?? "0.0.0.0";
+
+  bindCoreFeatureRuntime(runtime.config, runtime.services, runtime.eventBus);
 
   attachStaticWebApp({
     app: runtime.app,

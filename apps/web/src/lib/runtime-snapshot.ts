@@ -2,13 +2,19 @@ import previewSnapshot from "../../../../content/preview/bootstrap.json";
 
 export type RuntimeSnapshot = {
   appName: string;
+  authModes: string[];
+  configPath: string;
   contextRoot: string;
+  controllersPath: string;
   healthEndpoint: string;
   message: string;
+  metricsEndpoint: string;
   mode: "preview" | "server";
   previewIndex: string;
+  schedulerMode: string;
   source: string;
   status: string;
+  telemetryEnabled: boolean;
   timestamp: string;
   title: string;
   webDelivery: string;

@@ -8,6 +8,15 @@
   "healthEndpoint": "/api/system/health",
   "webDelivery": "preview/index.html",
   "previewIndex": "preview/index.html",
+  "configPath": "apps/server/config/middleware.config.json",
+  "controllersPath": "apps/server/dist/controllers",
+  "metricsEndpoint": "/__metrics",
+  "authModes": [
+    "basic",
+    "jwt"
+  ],
+  "schedulerMode": "disabled",
+  "telemetryEnabled": false,
   "source": "content/preview/bootstrap.json",
   "timestamp": "2026-03-22T00:00:00.000Z"
 }

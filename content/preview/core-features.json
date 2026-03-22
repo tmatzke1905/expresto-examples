@@ -1,0 +1,158 @@
+{
+  "config": {
+    "authModes": [
+      "basic",
+      "jwt"
+    ],
+    "configPath": "apps/server/config/middleware.config.json",
+    "controllersPath": "apps/server/dist/controllers",
+    "metricsEndpoint": "/__metrics",
+    "schedulerMode": "disabled",
+    "telemetryEnabled": false
+  },
+  "controllers": [
+    {
+      "controller": "system.controller.ts",
+      "method": "GET",
+      "path": "/api/system/health",
+      "security": "public",
+      "source": "content/preview/core-features.json",
+      "summary": "Preview mirror of the bootstrap snapshot endpoint."
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "security": "basic",
+      "source": "content/preview/core-features.json",
+      "summary": "Preview mirror of the Basic-authenticated login route."
+    },
+    {
+      "controller": "auth.controller.ts",
+      "method": "GET",
+      "path": "/api/auth/session",
+      "security": "jwt",
+      "source": "content/preview/core-features.json",
+      "summary": "Preview mirror of the protected session restore route."
+    },
+    {
+      "controller": "demo.controller.ts",
+      "method": "GET",
+      "path": "/api/demo/core-features",
+      "security": "public",
+      "source": "content/preview/core-features.json",
+      "summary": "Prepared runtime data for routes, hooks, services, and the EventBus demo."
+    },
+    {
+      "controller": "demo.controller.ts",
+      "method": "POST",
+      "path": "/api/demo/events/:presetId",
+      "security": "jwt",
+      "source": "content/preview/core-features.json",
+      "summary": "Protected preview mirror for the EventBus preset trigger."
+    }
+  ],
+  "lifecycleHooks": {
+    "registeredHooks": [
+      "initialize",
+      "startup",
+      "preInit",
+      "postInit",
+      "security"
+    ],
+    "entries": [
+      {
+        "hook": "postInit",
+        "detail": "Preview mode mirrors the controller-ready runtime state after route registration.",
+        "recordedAt": "2026-03-22T00:00:00.000Z",
+        "source": "content/preview/core-features.json"
+      },
+      {
+        "hook": "preInit",
+        "detail": "Preview keeps the same middleware-first lifecycle ordering as the live runtime.",
+        "recordedAt": "2026-03-22T00:00:00.000Z",
+        "source": "content/preview/core-features.json"
+      },
+      {
+        "hook": "startup",
+        "detail": "Preview simulates the ServiceRegistry population for featureCatalog and demoMessageBoard.",
+        "recordedAt": "2026-03-22T00:00:00.000Z",
+        "source": "content/preview/core-features.json"
+      },
+      {
+        "hook": "initialize",
+        "detail": "Preview uses the committed config snapshot and keeps the same API root metadata visible.",
+        "recordedAt": "2026-03-22T00:00:00.000Z",
+        "source": "content/preview/core-features.json"
+      }
+    ]
+  },
+  "services": {
+    "registeredNames": [
+      "featureCatalog",
+      "demoMessageBoard"
+    ],
+    "entries": [
+      {
+        "capabilities": [
+          "List documented controller routes",
+          "Expose route paths for the UI and documentation snippets",
+          "Participate in graceful shutdown"
+        ],
+        "kind": "FeatureCatalogService",
+        "name": "featureCatalog",
+        "registered": true,
+        "source": "content/preview/core-features.json",
+        "summary": "Preview mirror of the service that keeps the route catalog aligned with the UI."
+      },
+      {
+        "capabilities": [
+          "Persist the latest selected message in memory",
+          "Update state from protected EventBus presets",
+          "Reset state during shutdown"
+        ],
+        "kind": "DemoMessageBoardService",
+        "name": "demoMessageBoard",
+        "registered": true,
+        "source": "content/preview/core-features.json",
+        "summary": "Preview mirror of the service behind the visible EventBus text field."
+      }
+    ]
+  },
+  "eventSystem": {
+    "eventName": "expresto-examples.demo.event-system.message",
+    "lastPresetId": "greeting",
+    "listenerSummary": "Preview listener mirrors the live EventBus flow locally",
+    "presets": [
+      {
+        "id": "greeting",
+        "label": "Greeting",
+        "text": "Hello from the preview EventBus. The live runtime uses the same protected button interaction.",
+        "tone": "default"
+      },
+      {
+        "id": "warning",
+        "label": "Warning",
+        "text": "Preview warning message. In the live runtime this text is written after a JWT-protected EventBus emission.",
+        "tone": "warning"
+      },
+      {
+        "id": "info",
+        "label": "Info",
+        "text": "Informational preview payload mirroring the live EventBus message board.",
+        "tone": "info"
+      }
+    ],
+    "recentEvents": [
+      {
+        "eventName": "expresto-examples.demo.event-system.message",
+        "label": "Greeting",
+        "presetId": "greeting",
+        "recordedAt": "2026-03-22T00:00:00.000Z",
+        "source": "content/preview/core-features.json",
+        "text": "Hello from the preview EventBus. The live runtime uses the same protected button interaction."
+      }
+    ],
+    "selectedText": "Hello from the preview EventBus. The live runtime uses the same protected button interaction."
+  }
+}

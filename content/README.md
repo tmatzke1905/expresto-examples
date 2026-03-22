@@ -9,4 +9,6 @@ This directory separates authored content from runtime code.
 - `snippets/snippet-registry.ts`: shared snippet metadata used by the web app
 - `preview/`: static preview data used when the repository build is opened
   without a running server
+- `preview/core-features.json`: prepared AP6 runtime data for routes, hooks,
+  services, and the EventBus page
 - `preview/live-demo.json`: prepared EventBus, scheduler, and socket preview values for planned demos

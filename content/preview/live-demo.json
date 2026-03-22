@@ -3,18 +3,18 @@
     "presets": [
       {
         "label": "Greeting",
-        "text": "Hello from the preview EventBus. AP6 will emit this message through the backend first."
+        "text": "Hello from the preview EventBus. The live runtime emits this message through the backend first."
       },
       {
         "label": "Warning",
-        "text": "Preview warning message prepared in AP5 so the later live flow can reuse the same visible text field."
+        "text": "Preview warning message prepared so the later live flow can reuse the same visible text field."
       },
       {
         "label": "Info",
         "text": "Informational preview payload. The protected workspace already shows the exact UI shape for the final demo."
       }
     ],
-    "selectedText": "Hello from the preview EventBus. AP6 will emit this message through the backend first."
+    "selectedText": "Hello from the preview EventBus. The live runtime emits this message through the backend first."
   },
   "scheduler": {
     "intervalLabel": "Every 10 seconds",

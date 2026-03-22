@@ -5,6 +5,11 @@ import {
   PageStatePanel
 } from "../pages/FeaturePageTemplate";
 import { getFeaturePageDescriptor } from "../pages/feature-page-content";
+import {
+  emitCoreFeaturePreset,
+  loadCoreFeatureRuntime,
+  type CoreFeatureRuntime
+} from "../../lib/core-feature-runtime";
 import { previewDemoData } from "../../lib/preview-demo-data";
 import { runtimeFeatureCards, type RuntimeSnapshot } from "../../lib/runtime-snapshot";
 import type { FeatureMenuItem, SessionState } from "../../lib/session";
@@ -18,6 +23,8 @@ type ProtectedShellProps = {
   selectedFeature: FeatureMenuItem | null;
   session: SessionState;
 };
+
+type CoreFeatureLoadState = "error" | "loading" | "ready";
 
 function formatStatusLabel(value: string): string {
   if (value === "implemented") {
@@ -49,10 +56,44 @@ function getUserInitials(displayName: string): string {
     .slice(0, 2);
 }
 
+function renderCoreFeatureStatePanel(
+  loadState: CoreFeatureLoadState,
+  errorMessage: string,
+  featureTitle: string
+) {
+  if (loadState === "loading") {
+    return (
+      <PageStatePanel
+        body={`The ${featureTitle} runtime data is loading from the current environment.`}
+        title="Runtime data pending"
+        tone="loading"
+      />
+    );
+  }
+
+  if (loadState === "error") {
+    return (
+      <PageStatePanel
+        body={errorMessage || `The ${featureTitle} runtime data could not be loaded.`}
+        title="Runtime data unavailable"
+        tone="error"
+      />
+    );
+  }
+
+  return null;
+}
+
 function renderFeatureDemo(
   feature: FeatureMenuItem,
   runtimeSnapshot: RuntimeSnapshot | null,
-  session: SessionState
+  session: SessionState,
+  coreFeatureRuntime: CoreFeatureRuntime | null,
+  coreFeatureLoadState: CoreFeatureLoadState,
+  coreFeatureErrorMessage: string,
+  pendingPresetId: string | null,
+  eventErrorMessage: string,
+  onTriggerEventPreset: (presetId: string) => void
 ) {
   if (feature.id === "overview") {
     return (
@@ -62,7 +103,7 @@ function renderFeatureDemo(
             <span className="feature-card__tag">{entry.package}</span>
             <h3>{entry.title}</h3>
             <p>{entry.summary}</p>
-            <span className="source-chip">Status: {entry.status}</span>
+            <span className="source-chip">Status: {formatStatusLabel(entry.status)}</span>
           </article>
         ))}
       </div>
@@ -96,36 +137,89 @@ function renderFeatureDemo(
             <strong>{runtimeSnapshot?.previewIndex ?? "preview/index.html"}</strong>
           </div>
         </div>
+
+        {coreFeatureRuntime ? (
+          <div className="detail-grid">
+            <div className="detail-card">
+              <span className="detail-card__label">Config file</span>
+              <strong>{runtimeSnapshot?.configPath ?? coreFeatureRuntime.config.configPath}</strong>
+            </div>
+            <div className="detail-card">
+              <span className="detail-card__label">Controllers path</span>
+              <strong>{runtimeSnapshot?.controllersPath ?? coreFeatureRuntime.config.controllersPath}</strong>
+            </div>
+            <div className="detail-card">
+              <span className="detail-card__label">Auth modes</span>
+              <strong>{runtimeSnapshot?.authModes.join(", ") ?? coreFeatureRuntime.config.authModes.join(", ")}</strong>
+            </div>
+            <div className="detail-card">
+              <span className="detail-card__label">Metrics endpoint</span>
+              <strong>{runtimeSnapshot?.metricsEndpoint ?? coreFeatureRuntime.config.metricsEndpoint}</strong>
+            </div>
+            <div className="detail-card">
+              <span className="detail-card__label">Scheduler mode</span>
+              <strong>{runtimeSnapshot?.schedulerMode ?? coreFeatureRuntime.config.schedulerMode}</strong>
+            </div>
+            <div className="detail-card">
+              <span className="detail-card__label">Telemetry</span>
+              <strong>
+                {runtimeSnapshot?.telemetryEnabled ?? coreFeatureRuntime.config.telemetryEnabled
+                  ? "enabled"
+                  : "disabled"}
+              </strong>
+            </div>
+          </div>
+        ) : (
+          renderCoreFeatureStatePanel(
+            coreFeatureLoadState,
+            coreFeatureErrorMessage,
+            "bootstrap"
+          )
+        )}
       </div>
     );
   }
 
   if (feature.id === "controllers") {
+    if (!coreFeatureRuntime) {
+      return renderCoreFeatureStatePanel(
+        coreFeatureLoadState,
+        coreFeatureErrorMessage,
+        "controllers"
+      );
+    }
+
     return (
-      <div className="endpoint-list">
-        {[
-          {
-            path: "/api/system/health",
-            method: "GET",
-            security: "public"
-          },
-          {
-            path: "/api/auth/login",
-            method: "POST",
-            security: "basic"
-          },
-          {
-            path: "/api/auth/session",
-            method: "GET",
-            security: "jwt"
-          }
-        ].map(endpoint => (
-          <article className="endpoint-card" key={endpoint.path}>
-            <span className="endpoint-card__method">{endpoint.method}</span>
-            <strong>{endpoint.path}</strong>
-            <span>{endpoint.security}</span>
+      <div className="demo-stack">
+        <div className="auth-flow-grid">
+          <article className="detail-card">
+            <span className="detail-card__label">Routes</span>
+            <strong>{coreFeatureRuntime.controllers.length}</strong>
+            <p>The route catalog is loaded from the current runtime.</p>
           </article>
-        ))}
+          <article className="detail-card">
+            <span className="detail-card__label">Controller files</span>
+            <strong>{new Set(coreFeatureRuntime.controllers.map(route => route.controller)).size}</strong>
+            <p>Health, auth, and demo controllers now form one visible routing story.</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Security modes</span>
+            <strong>{Array.from(new Set(coreFeatureRuntime.controllers.map(route => route.security))).join(", ")}</strong>
+            <p>Public, Basic, and JWT handlers are shown together.</p>
+          </article>
+        </div>
+
+        <div className="endpoint-list">
+          {coreFeatureRuntime.controllers.map(route => (
+            <article className="endpoint-card" key={`${route.method}-${route.path}`}>
+              <span className="endpoint-card__method">{route.method}</span>
+              <strong>{route.path}</strong>
+              <span>{route.security}</span>
+              <span>{route.controller}</span>
+              <p className="endpoint-card__summary">{route.summary}</p>
+            </article>
+          ))}
+        </div>
       </div>
     );
   }
@@ -148,27 +242,186 @@ function renderFeatureDemo(
           <strong>{session.source}</strong>
           <p>Session restoration always verifies the stored JWT before the app shell opens.</p>
         </article>
+        <article className="detail-card">
+          <span className="detail-card__label">Protected feature calls</span>
+          <strong>
+            {coreFeatureRuntime?.controllers.filter(route => route.security === "jwt").length ?? 0}
+          </strong>
+          <p>JWT is reused for the EventBus trigger route as well.</p>
+        </article>
+      </div>
+    );
+  }
+
+  if (feature.id === "lifecycle-hooks") {
+    if (!coreFeatureRuntime) {
+      return renderCoreFeatureStatePanel(
+        coreFeatureLoadState,
+        coreFeatureErrorMessage,
+        "lifecycle hooks"
+      );
+    }
+
+    return (
+      <div className="demo-stack">
+        <div className="auth-flow-grid">
+          <article className="detail-card">
+            <span className="detail-card__label">Registered hooks</span>
+            <strong>{coreFeatureRuntime.lifecycleHooks.registeredHooks.length}</strong>
+            <p>{coreFeatureRuntime.lifecycleHooks.registeredHooks.join(", ")}</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Latest trace entry</span>
+            <strong>{coreFeatureRuntime.lifecycleHooks.entries[0]?.hook ?? "pending"}</strong>
+            <p>{coreFeatureRuntime.lifecycleHooks.entries[0]?.recordedAt ?? "No hook has been recorded yet."}</p>
+          </article>
+        </div>
+
+        <div className="preview-feed-list">
+          {coreFeatureRuntime.lifecycleHooks.entries.map(entry => (
+            <div className="preview-feed-item" key={`${entry.hook}-${entry.recordedAt}`}>
+              <strong>{entry.hook}</strong>
+              <span className="preview-feed-item__meta">{entry.recordedAt}</span>
+              <span>{entry.detail}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (feature.id === "service-registry") {
+    if (!coreFeatureRuntime) {
+      return renderCoreFeatureStatePanel(
+        coreFeatureLoadState,
+        coreFeatureErrorMessage,
+        "service registry"
+      );
+    }
+
+    return (
+      <div className="demo-stack">
+        <div className="auth-flow-grid">
+          <article className="detail-card">
+            <span className="detail-card__label">Registered services</span>
+            <strong>{coreFeatureRuntime.services.entries.filter(entry => entry.registered).length}</strong>
+            <p>{coreFeatureRuntime.services.registeredNames.join(", ")}</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Registry source</span>
+            <strong>Lifecycle startup hook</strong>
+            <p>The services are registered before the workspace pages read them.</p>
+          </article>
+        </div>
+
+        <div className="card-grid">
+          {coreFeatureRuntime.services.entries.map(service => (
+            <article className="feature-card" key={service.name}>
+              <span className="feature-card__tag">{service.kind}</span>
+              <h3>{service.name}</h3>
+              <p>{service.summary}</p>
+              <ul className="bullet-list bullet-list--compact">
+                {service.capabilities.map(capability => (
+                  <li key={capability}>{capability}</li>
+                ))}
+              </ul>
+              <span className="source-chip">
+                {service.registered ? "Registered" : "Missing"} · {service.source}
+              </span>
+            </article>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (feature.id === "event-system") {
+    if (!coreFeatureRuntime) {
+      return renderCoreFeatureStatePanel(
+        coreFeatureLoadState,
+        coreFeatureErrorMessage,
+        "event system"
+      );
+    }
+
     return (
       <div className="demo-stack">
+        <div className="auth-flow-grid">
+          <article className="detail-card">
+            <span className="detail-card__label">Event name</span>
+            <strong>{coreFeatureRuntime.eventSystem.eventName}</strong>
+            <p>{coreFeatureRuntime.eventSystem.listenerSummary}</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Last preset</span>
+            <strong>{coreFeatureRuntime.eventSystem.lastPresetId}</strong>
+            <p>The visible text field always reflects the latest emitted preset.</p>
+          </article>
+        </div>
+
         <div className="demo-button-row">
-          {previewDemoData.eventSystem.presets.map(preset => (
-            <button className="secondary-button" disabled key={preset.label} type="button">
-              {preset.label}
+          {coreFeatureRuntime.eventSystem.presets.map(preset => (
+            <button
+              className={`secondary-button${
+                coreFeatureRuntime.eventSystem.lastPresetId === preset.id
+                  ? " secondary-button--active"
+                  : ""
+              }`}
+              disabled={pendingPresetId !== null}
+              key={preset.id}
+              onClick={() => onTriggerEventPreset(preset.id)}
+              type="button"
+            >
+              {pendingPresetId === preset.id ? `Sending ${preset.label}...` : preset.label}
             </button>
           ))}
         </div>
 
+        {eventErrorMessage ? (
+          <div className="inline-message inline-message--error">{eventErrorMessage}</div>
+        ) : null}
+
         <textarea
           className="token-viewer demo-textarea"
           readOnly
-          value={previewDemoData.eventSystem.selectedText}
+          value={coreFeatureRuntime.eventSystem.selectedText}
         />
+
+        <div className="preview-feed-list">
+          {coreFeatureRuntime.eventSystem.recentEvents.length > 0 ? (
+            coreFeatureRuntime.eventSystem.recentEvents.map(entry => (
+              <div className="preview-feed-item" key={`${entry.presetId}-${entry.recordedAt}`}>
+                <strong>{entry.label}</strong>
+                <span className="preview-feed-item__meta">{entry.recordedAt}</span>
+                <span>{entry.text}</span>
+              </div>
+            ))
+          ) : (
+            <PageStatePanel
+              body="Emit one of the presets to create the first visible EventBus entry."
+              title="No EventBus messages yet"
+            />
+          )}
+        </div>
       </div>
+    );
+  }
+
+  if (feature.id === "metrics") {
+    return (
+      <PageStatePanel
+        body="Metrics and observability remain part of the planned documentation surface. The bootstrap page already exposes the metrics endpoint path from the current config."
+        title="Observability page is planned"
+      />
+    );
+  }
+
+  if (feature.id === "public-api") {
+    return (
+      <PageStatePanel
+        body="The public API reference remains planned. The current pages already reuse real runtime code and shared snippets as the foundation."
+        title="Public API page is planned"
+      />
     );
   }
 
@@ -184,7 +437,7 @@ function renderFeatureDemo(
           <article className="detail-card">
             <span className="detail-card__label">Latest preview value</span>
             <strong>{previewDemoData.scheduler.latestTick}</strong>
-            <p>AP7 will replace this prepared value with the live server time feed.</p>
+            <p>A later live runtime step will replace this prepared value with the real server time feed.</p>
           </article>
         </div>
 
@@ -204,16 +457,16 @@ function renderFeatureDemo(
     return (
       <div className="demo-stack">
         <div className="auth-flow-grid">
-        <article className="detail-card">
-          <span className="detail-card__label">Connection state</span>
-          <strong>{previewDemoData.websocket.connectionState}</strong>
-          <p>The later socket view will replace this prepared state with the live transport state.</p>
-        </article>
-        <article className="detail-card">
-          <span className="detail-card__label">Shared feed</span>
-          <strong>{previewDemoData.websocket.transportLabel}</strong>
-          <p>Scheduler ticks and EventBus updates already share one prepared preview feed.</p>
-        </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Connection state</span>
+            <strong>{previewDemoData.websocket.connectionState}</strong>
+            <p>The later socket view will replace this prepared state with the live transport state.</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Shared feed</span>
+            <strong>{previewDemoData.websocket.transportLabel}</strong>
+            <p>Scheduler ticks and EventBus updates already share one prepared preview feed.</p>
+          </article>
         </div>
 
         <div className="preview-feed-list">
@@ -246,6 +499,11 @@ export function ProtectedShell({
   session
 }: ProtectedShellProps) {
   const [isNavigationOpen, setIsNavigationOpen] = useState(false);
+  const [coreFeatureRuntime, setCoreFeatureRuntime] = useState<CoreFeatureRuntime | null>(null);
+  const [coreFeatureLoadState, setCoreFeatureLoadState] = useState<CoreFeatureLoadState>("loading");
+  const [coreFeatureErrorMessage, setCoreFeatureErrorMessage] = useState("");
+  const [pendingPresetId, setPendingPresetId] = useState<string | null>(null);
+  const [eventErrorMessage, setEventErrorMessage] = useState("");
   const page = selectedFeature ? getFeaturePageDescriptor(selectedFeature) : null;
   const userInitials = getUserInitials(session.user.displayName);
 
@@ -254,9 +512,68 @@ export function ProtectedShell({
     onSelectFeature(featureId);
   }
 
+  async function handleTriggerEventPreset(presetId: string) {
+    setPendingPresetId(presetId);
+    setEventErrorMessage("");
+
+    try {
+      const eventSystem = await emitCoreFeaturePreset(session.token, presetId);
+      setCoreFeatureRuntime(current =>
+        current
+          ? {
+              ...current,
+              eventSystem
+            }
+          : current
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "The EventBus preset could not be emitted.";
+      setEventErrorMessage(message);
+    } finally {
+      setPendingPresetId(null);
+    }
+  }
+
   useEffect(() => {
     setIsNavigationOpen(false);
   }, [selectedFeature?.id]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadFeatureRuntime() {
+      setCoreFeatureLoadState("loading");
+      setCoreFeatureErrorMessage("");
+
+      try {
+        const nextRuntime = await loadCoreFeatureRuntime();
+
+        if (cancelled) {
+          return;
+        }
+
+        setCoreFeatureRuntime(nextRuntime);
+        setCoreFeatureLoadState("ready");
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        const message =
+          error instanceof Error ? error.message : "The runtime-backed feature data could not be loaded.";
+        setCoreFeatureRuntime(null);
+        setCoreFeatureErrorMessage(message);
+        setCoreFeatureLoadState("error");
+      }
+    }
+
+    void loadFeatureRuntime();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session.token]);
 
   return (
     <main className="shell shell--app">
@@ -381,7 +698,19 @@ export function ProtectedShell({
               </article>
 
               <FeaturePageTemplate
-                demoContent={renderFeatureDemo(selectedFeature, runtimeSnapshot, session)}
+                demoContent={renderFeatureDemo(
+                  selectedFeature,
+                  runtimeSnapshot,
+                  session,
+                  coreFeatureRuntime,
+                  coreFeatureLoadState,
+                  coreFeatureErrorMessage,
+                  pendingPresetId,
+                  eventErrorMessage,
+                  presetId => {
+                    void handleTriggerEventPreset(presetId);
+                  }
+                )}
                 feature={selectedFeature}
                 page={page}
                 runtimeSnapshot={runtimeSnapshot}

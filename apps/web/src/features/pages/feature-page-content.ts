@@ -1,4 +1,9 @@
-import { featurePageContent, type AuthoredFeaturePageCodeExampleRef } from "../../../../../content/features/page-content";
+import {
+  featurePageContent,
+  getFeatureDocumentationReference,
+  getReadmeDocumentationReference,
+  type AuthoredFeaturePageCodeExampleRef
+} from "../../../../../content/features/page-content";
 import { getSharedSnippet } from "../../../../../content/snippets/snippet-registry";
 import type { FeatureMenuItem } from "../../lib/session";
 
@@ -14,7 +19,8 @@ export type FeaturePageCodeExample = {
 
 export type FeaturePageDocumentationNote = {
   body: string;
-  reference: string;
+  referenceLabel: string;
+  referenceUrl: string;
   title: string;
 };
 
@@ -77,19 +83,19 @@ function createGenericPage(feature: FeatureMenuItem): FeaturePageDescriptor {
     description: feature.detail,
     highlights: [
       "Navigation target is available in the protected shell today.",
-      "The page is now fed by the shared AP5 content model instead of embedding all content in UI code.",
+      "The page is fed by the shared content model instead of embedding all content in UI code.",
       isImplemented
-        ? "The current runtime contains an initial implementation that future packages can expand."
-        : "The detailed runtime behavior will be added in the scheduled work package."
+        ? "The current runtime contains an initial implementation that can be expanded without changing the page shell."
+        : "The detailed runtime behavior is still being added while the page structure and references are already in place."
     ],
     demo: {
       status: isImplemented ? "implemented" : "planned",
       title: isImplemented ? "Current workspace behavior" : "Planned demo surface",
       summary: isImplemented
-        ? `${feature.title} already contributes to the running workspace and is described through the shared AP5 page content system.`
-        : `AP5 keeps the ${feature.title} route, navigation entry, and content shell ready for the later live demo work.`,
+        ? `${feature.title} already contributes to the running workspace and is grounded in the current repository implementation.`
+        : `The ${feature.title} route and content shell are already in place while the runtime-specific behavior is still being added.`,
       bullets: [
-        `Primary work package: ${feature.package}`,
+        `Category: ${feature.package}`,
         isImplemented
           ? "The page focuses on what already runs in the repository today."
           : "The page explains the intended outcome before the runtime-specific code arrives.",
@@ -110,14 +116,14 @@ function createGenericPage(feature: FeatureMenuItem): FeaturePageDescriptor {
     ],
     documentation: [
       {
-        title: "Current scope",
-        body: `${feature.title} is already part of the authenticated information architecture, even when its live backend demo is scheduled for a later package.`,
-        reference: "roadmap.md"
+        title: "Official framework guide",
+        body: `${feature.title} already maps to the documented expresto-server feature surface, even when the example application is still expanding the live demo behavior.`,
+        ...getFeatureDocumentationReference(feature.id)
       },
       {
-        title: "AP5 content system",
-        body: "AP5 moves page descriptions, documentation notes, prepared preview data, and code snippet selection into shared content files so later work packages can focus on behavior.",
-        reference: "docs/ap5-content-system.md"
+        title: "Framework overview",
+        body: "The README collects the supported v1 scope and links the dedicated guides that the example application builds on page by page.",
+        ...getReadmeDocumentationReference("README / Supported v1 scope")
       }
     ]
   };

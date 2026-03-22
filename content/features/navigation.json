@@ -4,88 +4,88 @@
       "id": "overview",
       "title": "Overview",
       "summary": "Top-level introduction to the secured demo application.",
-      "detail": "This landing area will evolve into the authenticated feature overview. AP3 uses it to prove that a JWT-backed session can unlock a shared application shell.",
-      "package": "AP3",
+      "detail": "This landing area introduces the authenticated workspace and anchors the rest of the framework pages after login.",
+      "package": "Workspace",
       "status": "implemented"
     },
     {
       "id": "bootstrap",
       "title": "Bootstrap & Configuration",
       "summary": "createServer() bootstrap, config loading, and static delivery.",
-      "detail": "The server already bootstraps expresto-server from JSON config and serves the React build. Later packages will expose the full configuration walkthrough here.",
-      "package": "AP2",
+      "detail": "The page walks through createServer(), JSON config loading, and how the same runtime delivers both API endpoints and the React application.",
+      "package": "Runtime",
       "status": "implemented"
     },
     {
       "id": "controllers",
       "title": "Controllers & Routing",
       "summary": "File-based controllers and route security modes.",
-      "detail": "This page is planned for AP6 and will show public, Basic-protected, and JWT-protected handlers with source snippets.",
-      "package": "AP6",
-      "status": "planned"
+      "detail": "This page shows the runtime-backed route catalog, controller files, and mixed public, Basic, and JWT security modes.",
+      "package": "HTTP",
+      "status": "implemented"
     },
     {
       "id": "security",
       "title": "Security",
       "summary": "Basic Auth, JWT generation, and session verification.",
-      "detail": "AP3 activates the first part of this feature. The page itself will later show the complete request flow and validation examples.",
-      "package": "AP3",
+      "detail": "The page explains the Basic Auth login, JWT issuance, and protected session verification flow used by the workspace.",
+      "package": "Auth",
       "status": "implemented"
     },
     {
       "id": "lifecycle-hooks",
       "title": "Lifecycle Hooks",
       "summary": "Startup, middleware, and shutdown extension points.",
-      "detail": "The navigation entry already exists so the protected app shell matches the target feature map. Hook-specific UI content follows in AP6.",
-      "package": "AP6",
-      "status": "planned"
+      "detail": "The page shows registered initialize, startup, preInit, postInit, and security hooks together with their recorded runtime trace.",
+      "package": "Runtime",
+      "status": "implemented"
     },
     {
       "id": "service-registry",
       "title": "Service Registry",
       "summary": "Shared infrastructure services and lifecycle management.",
-      "detail": "A dedicated page for service registration and inspection will be added when the central service demos are introduced.",
-      "package": "AP6",
-      "status": "planned"
+      "detail": "The Service Registry page surfaces the demo services that are registered during startup and inspected from the workspace.",
+      "package": "Runtime",
+      "status": "implemented"
     },
     {
       "id": "event-system",
       "title": "Event System",
       "summary": "Framework events, application events, and EventBus flows.",
-      "detail": "The EventBus page is queued for AP6 and AP7, where it will become interactive through button-driven demo messages.",
-      "package": "AP6/AP7",
-      "status": "planned"
+      "detail": "The EventBus page emits protected demo presets through the backend and writes the latest server-side message into the visible text field.",
+      "package": "Events",
+      "status": "implemented"
     },
     {
       "id": "scheduler",
       "title": "Scheduler",
       "summary": "Cron-driven background jobs inside the runtime.",
-      "detail": "The scheduler page will later stream a server-side clock into the UI every ten seconds via the WebSocket demo.",
-      "package": "AP7",
+      "detail": "The scheduler page prepares the later live clock demo in which a recurring server-side job produces the visible time feed.",
+      "package": "Live demos",
       "status": "planned"
     },
     {
       "id": "websocket",
       "title": "WebSocket",
       "summary": "JWT-protected real-time transport on the shared server.",
-      "detail": "WebSocket UI and live transport start in AP7. For now, the menu already reserves the protected navigation target.",
-      "package": "AP7",
+      "detail": "The WebSocket page prepares the later transport layer that forwards scheduler ticks and EventBus messages into the authenticated UI.",
+      "package": "Live demos",
       "status": "planned"
     },
     {
       "id": "metrics",
       "title": "Metrics & Observability",
       "summary": "Prometheus metrics and runtime observability.",
-      "detail": "This page will collect the /__metrics endpoint, request tracing notes, and runtime health references in a later package.",
-      "package": "AP7",
+      "detail": "This page will collect the metrics endpoint, tracing notes, and runtime health references as the observability coverage grows.",
+      "package": "Observability",
       "status": "planned"
     },
     {
       "id": "public-api",
       "title": "Public API & Contracts",
       "summary": "Stable exports, types, and supported v1 contracts.",
-      "detail": "A reference-focused page for the documented public API is planned for AP8.",
-      "package": "AP8",
+      "detail": "A reference-focused page for the documented public API and framework contracts remains part of the planned documentation surface.",
+      "package": "Reference",
       "status": "planned"
     }
   ]
