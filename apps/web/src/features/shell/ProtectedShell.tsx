@@ -18,6 +18,28 @@ type ProtectedShellProps = {
   session: SessionState;
 };
 
+function formatStatusLabel(value: string): string {
+  if (value === "implemented") {
+    return "Implemented";
+  }
+
+  if (value === "planned") {
+    return "Planned";
+  }
+
+  return value;
+}
+
+function getFeatureShortCode(title: string): string {
+  const words = title.split(/[^a-z0-9]+/i).filter(Boolean);
+
+  if (words.length >= 2) {
+    return `${words[0]?.slice(0, 1) ?? ""}${words[1]?.slice(0, 1) ?? ""}`.toUpperCase();
+  }
+
+  return title.replace(/\s+/g, "").slice(0, 2).toUpperCase();
+}
+
 function getUserInitials(displayName: string): string {
   return displayName
     .split(" ")
@@ -219,23 +241,66 @@ export function ProtectedShell({
 
   return (
     <main className="shell shell--app">
-      <section className="workspace-grid">
-        <button
-          aria-hidden={!isNavigationOpen}
-          className={`drawer-scrim${isNavigationOpen ? " drawer-scrim--visible" : ""}`}
-          onClick={() => setIsNavigationOpen(false)}
-          tabIndex={isNavigationOpen ? 0 : -1}
-          type="button"
-        />
+      <button
+        aria-hidden={!isNavigationOpen}
+        className={`drawer-scrim${isNavigationOpen ? " drawer-scrim--visible" : ""}`}
+        onClick={() => setIsNavigationOpen(false)}
+        tabIndex={isNavigationOpen ? 0 : -1}
+        type="button"
+      />
 
-        <aside className={`panel navigation-panel${isNavigationOpen ? " navigation-panel--open" : ""}`}>
-          <div className="panel__header">
-            <h2>Feature menu</h2>
-            <p>{session.features.length} pages are already wired into the protected workspace.</p>
+      <header className="app-chrome workspace-topbar">
+        <div className="workspace-topbar__lead">
+          <button
+            aria-expanded={isNavigationOpen}
+            className="secondary-button nav-toggle"
+            onClick={() => setIsNavigationOpen(open => !open)}
+            type="button"
+          >
+            {isNavigationOpen ? "Close menu" : "Open menu"}
+          </button>
+
+          <div className="app-brand app-brand--admin">
+            <span className="app-brand__mark">EX</span>
+            <div className="app-brand__copy">
+              <span className="app-brand__title">{applicationTitle}</span>
+              <span className="app-brand__subtitle">Admin workspace</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="workspace-topbar__title">
+          <span className="workspace-topbar__label">Current feature</span>
+          <strong>{selectedFeature?.title ?? "Feature map pending"}</strong>
+        </div>
+
+        <div className="app-chrome__actions">
+          <span className="hero__eyebrow hero__eyebrow--chrome">{modeLabel}</span>
+
+          <div className="workspace-user-pill">
+            <span className="workspace-user-pill__avatar">{userInitials || "EX"}</span>
+            <span className="workspace-user-pill__name">{session.user.displayName}</span>
+          </div>
+
+          <button className="secondary-button" onClick={onLogout} type="button">
+            Sign out
+          </button>
+        </div>
+      </header>
+
+      <section className="workspace-grid">
+        <aside
+          className={`panel navigation-panel navigation-panel--editorial${
+            isNavigationOpen ? " navigation-panel--open" : ""
+          }`}
+        >
+          <div className="navigation-panel__header">
+            <h2>Menu</h2>
+            <p>{session.features.length} resources</p>
           </div>
 
           {session.features.length > 0 ? (
-            <nav className="feature-nav">
+            <nav className="feature-nav feature-nav--admin">
               {session.features.map(feature => (
                 <button
                   className={`feature-nav__item${
@@ -245,8 +310,13 @@ export function ProtectedShell({
                   onClick={() => handleFeatureSelection(feature.id)}
                   type="button"
                 >
-                  <span>{feature.title}</span>
-                  <small>{feature.status}</small>
+                  <span className="feature-nav__glyph">{getFeatureShortCode(feature.title)}</span>
+                  <span className="feature-nav__content">
+                    <strong>{feature.title}</strong>
+                    <small>
+                      {feature.package} · {formatStatusLabel(feature.status)}
+                    </small>
+                  </span>
                 </button>
               ))}
             </nav>
@@ -254,71 +324,84 @@ export function ProtectedShell({
             <PageStatePanel
               body="No features are currently available in the shared navigation registry."
               title="Feature registry is empty"
+              tone="loading"
             />
           )}
+
+          <div className="navigation-panel__footer">
+            <span>{session.user.username}</span>
+            <span>{session.user.role}</span>
+          </div>
         </aside>
-
-        <section className="app-chrome workspace-topbar">
-          <div className="app-brand">
-            <span className="app-brand__title">{applicationTitle}</span>
-            <span className="app-brand__subtitle">Example workspace for expresto-server</span>
-          </div>
-
-          <div className="app-chrome__actions">
-            <span className="hero__eyebrow">{modeLabel}</span>
-
-            <button
-              aria-expanded={isNavigationOpen}
-              className="secondary-button nav-toggle"
-              onClick={() => setIsNavigationOpen(open => !open)}
-              type="button"
-            >
-              {isNavigationOpen ? "Close menu" : "Feature menu"}
-            </button>
-
-            <button className="secondary-button" onClick={onLogout} type="button">
-              Sign out
-            </button>
-          </div>
-        </section>
-
-        <section className="hero hero--app workspace-hero">
-          <div className="app-hero__content">
-            <div>
-              <div className="hero__eyebrow">Authenticated workspace</div>
-              <h1>{selectedFeature?.title ?? "Feature map pending"}</h1>
-              <p className="hero__copy">
-                {selectedFeature?.summary ??
-                  "The application could not resolve a feature entry. Check the shared navigation data."}
-              </p>
-              <p className="hero__supporting-copy">
-                The AP4 shell keeps every feature page consistent across title, demo area, code
-                examples, and documentation notes.
-              </p>
-            </div>
-
-            <div className="session-summary">
-              <span className="session-summary__label">Signed in as</span>
-              <div className="session-summary__identity">
-                <span className="session-avatar">{userInitials || "EX"}</span>
-                <div>
-                  <strong>{session.user.displayName}</strong>
-                  <span>{session.user.username}</span>
-                  <span>{session.user.role}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
 
         <section className="content-stack content-stack--feature">
           {selectedFeature && page ? (
-            <FeaturePageTemplate
-              demoContent={renderFeatureDemo(selectedFeature, runtimeSnapshot, session)}
-              feature={selectedFeature}
-              page={page}
-              runtimeSnapshot={runtimeSnapshot}
-            />
+            <>
+              <article className="panel workspace-page-header">
+                <div className="workspace-page-header__content">
+                  <div>
+                    <span className="feature-badge">{selectedFeature.package}</span>
+                    <p className="workspace-page-header__summary">{selectedFeature.detail}</p>
+                  </div>
+
+                  <div className="workspace-page-header__meta">
+                    <div className="detail-card">
+                      <span className="detail-card__label">Status</span>
+                      <strong>{formatStatusLabel(selectedFeature.status)}</strong>
+                    </div>
+                    <div className="detail-card">
+                      <span className="detail-card__label">Runtime mode</span>
+                      <strong>{runtimeSnapshot?.mode ?? session.mode}</strong>
+                    </div>
+                    <div className="detail-card">
+                      <span className="detail-card__label">Signed in as</span>
+                      <strong>{session.user.username}</strong>
+                    </div>
+                  </div>
+                </div>
+              </article>
+
+              <FeaturePageTemplate
+                demoContent={renderFeatureDemo(selectedFeature, runtimeSnapshot, session)}
+                feature={selectedFeature}
+                page={page}
+                runtimeSnapshot={runtimeSnapshot}
+              />
+
+              <article className="panel workspace-utility-panel">
+                <div className="workspace-utility-grid">
+                  <section className="workspace-utility-card">
+                    <div className="panel__header">
+                      <h2>Runtime snapshot</h2>
+                      <p>Bootstrap details for the current mode.</p>
+                    </div>
+
+                    {runtimeSnapshot ? (
+                      <div className="session-meta">
+                        <span>Status: {runtimeSnapshot.status}</span>
+                        <span>Source: {runtimeSnapshot.source}</span>
+                        <span>Updated: {runtimeSnapshot.timestamp}</span>
+                      </div>
+                    ) : (
+                      <PageStatePanel
+                        body="The runtime snapshot is still loading from the current environment."
+                        title="Runtime snapshot pending"
+                        tone="loading"
+                      />
+                    )}
+                  </section>
+
+                  <section className="workspace-utility-card">
+                    <div className="panel__header">
+                      <h2>JWT session</h2>
+                      <p>The generated token is reused for protected requests and later live demos.</p>
+                    </div>
+
+                    <textarea className="token-viewer" readOnly value={session.token} />
+                  </section>
+                </div>
+              </article>
+            </>
           ) : (
             <article className="panel">
               <div className="panel__header">
@@ -333,51 +416,6 @@ export function ProtectedShell({
             </article>
           )}
         </section>
-
-        <aside className="info-rail">
-          <article className="panel panel--compact">
-            <div className="panel__header">
-              <h2>Runtime</h2>
-              <p>Bootstrap details for the current mode.</p>
-            </div>
-
-            {runtimeSnapshot ? (
-              <div className="session-meta">
-                <span>Status: {runtimeSnapshot.status}</span>
-                <span>Source: {runtimeSnapshot.source}</span>
-                <span>Updated: {runtimeSnapshot.timestamp}</span>
-              </div>
-            ) : (
-              <PageStatePanel
-                body="The runtime snapshot is still loading from the current environment."
-                title="Runtime snapshot pending"
-                tone="loading"
-              />
-            )}
-          </article>
-
-          <article className="panel panel--compact">
-            <div className="panel__header">
-              <h2>JWT session</h2>
-              <p>The generated token is reused for protected requests and later live demos.</p>
-            </div>
-
-            <textarea className="token-viewer" readOnly value={session.token} />
-          </article>
-
-          <article className="panel panel--compact">
-            <div className="panel__header">
-              <h2>Session metadata</h2>
-              <p>Current user, issue time, and verification source.</p>
-            </div>
-
-            <div className="session-meta">
-              <span>User: {session.user.username}</span>
-              <span>Issued: {session.issuedAt}</span>
-              <span>Source: {session.source}</span>
-            </div>
-          </article>
-        </aside>
       </section>
     </main>
   );

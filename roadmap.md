@@ -100,34 +100,34 @@ Preview mode:
 
 ## Page Map
 
-| Page | Focus | Backend demo |
-|------|-------|--------------|
-| Login | Basic Auth -> JWT flow | token issue, error states |
-| Overview | introduction, architecture, navigation | runtime info, configuration |
-| Bootstrap & Configuration | `createServer()`, config, startup rules | sample config, startup path |
-| Controllers & Routing | controller shape, routes, security modes | public and protected endpoints |
-| Security | Basic, JWT, security hooks | login, protected route, auth state |
-| Lifecycle Hooks | hook order and hook context | hook logs and registration |
-| Service Registry | service registration and usage | demo service, lookup, shutdown hints |
-| Event System | EventBus, events, payloads | buttons trigger demo events and update a text field |
-| Scheduler | cron jobs and scheduler events | demo job sends the current time every 10s |
-| WebSocket | JWT-protected Socket.IO connection | live delivery of scheduler time and EventBus messages |
-| Metrics & Observability | Prometheus, telemetry, runtime visibility | `__metrics`, optional runtime info |
-| Public API & Contracts | stable API surface and contracts | types, contracts, copy-paste snippets |
+| Page                      | Focus                                     | Backend demo                                          |
+| ------------------------- | ----------------------------------------- | ----------------------------------------------------- |
+| Login                     | Basic Auth -> JWT flow                    | token issue, error states                             |
+| Overview                  | introduction, architecture, navigation    | runtime info, configuration                           |
+| Bootstrap & Configuration | `createServer()`, config, startup rules   | sample config, startup path                           |
+| Controllers & Routing     | controller shape, routes, security modes  | public and protected endpoints                        |
+| Security                  | Basic, JWT, security hooks                | login, protected route, auth state                    |
+| Lifecycle Hooks           | hook order and hook context               | hook logs and registration                            |
+| Service Registry          | service registration and usage            | demo service, lookup, shutdown hints                  |
+| Event System              | EventBus, events, payloads                | buttons trigger demo events and update a text field   |
+| Scheduler                 | cron jobs and scheduler events            | demo job sends the current time every 10s             |
+| WebSocket                 | JWT-protected Socket.IO connection        | live delivery of scheduler time and EventBus messages |
+| Metrics & Observability   | Prometheus, telemetry, runtime visibility | `__metrics`, optional runtime info                    |
+| Public API & Contracts    | stable API surface and contracts          | types, contracts, copy-paste snippets                 |
 
 ## Status Overview
 
-| Work package | Status | Summary |
-|------|--------|---------|
-| AP1 | implemented | repository foundation, workspaces, preview target, base docs |
-| AP2 | implemented | `createServer()` bootstrap, JSON config, web delivery, preview build |
-| AP3 | implemented | Basic login, JWT session, protected shell, preview session |
-| AP4 | implemented | responsive frontend foundation, shared page template, and mobile feature navigation |
-| AP5 | open | shared system for documentation, snippets, and preview data |
-| AP6 | open | core pages for routing, security, hooks, services, and event system |
-| AP7 | open | live demos for scheduler, WebSocket, and observability |
-| AP8 | open | public API and stable contracts as reference pages |
-| AP9 | open | QA, tests, preview validation, and final documentation |
+| Work package | Status      | Summary                                                                             |
+| ------------ | ----------- | ----------------------------------------------------------------------------------- |
+| AP1          | implemented | repository foundation, workspaces, preview target, base docs                        |
+| AP2          | implemented | `createServer()` bootstrap, JSON config, web delivery, preview build                |
+| AP3          | implemented | Basic login, JWT session, protected shell, preview session                          |
+| AP4          | implemented | responsive frontend foundation, shared page template, and mobile feature navigation |
+| AP5          | open        | shared system for documentation, snippets, and preview data                         |
+| AP6          | open        | core pages for routing, security, hooks, services, and event system                 |
+| AP7          | open        | live demos for scheduler, WebSocket, and observability                              |
+| AP8          | open        | public API and stable contracts as reference pages                                  |
+| AP9          | open        | QA, tests, preview validation, and final documentation                              |
 
 ## Current Progress
 
@@ -311,17 +311,17 @@ Outcome:
 
 Each work package uses its own branch with the `codex/` prefix.
 
-| Work package | Branch | Example completion commit message |
-|------|--------|-----------------------------------|
-| AP1 | `codex/ap1-projektgrundlage` | `Lay the repository foundation for expresto-examples` |
-| AP2 | `codex/ap2-server-bootstrap` | `Integrate expresto-server and static app delivery` |
-| AP3 | `codex/ap3-login-und-jwt` | `Implement demo login with Basic Auth and JWT flow` |
-| AP4 | `codex/ap4-frontend-navigation` | `Create the responsive app layout and feature navigation` |
-| AP5 | `codex/ap5-doku-und-snippets` | `Introduce shared documentation, snippets, and preview data` |
-| AP6 | `codex/ap6-kernseiten` | `Add the core pages for routing, security, hooks, and services` |
-| AP7 | `codex/ap7-live-demos` | `Connect scheduler, EventBus, and WebSocket through interactive UI demos` |
-| AP8 | `codex/ap8-public-api-und-contracts` | `Document the public API and stable framework contracts in the demo app` |
-| AP9 | `codex/ap9-qa-und-dokumentation` | `Complete the example app with tests, preview validation, and final docs` |
+| Work package | Branch                               | Example completion commit message                                         |
+| ------------ | ------------------------------------ | ------------------------------------------------------------------------- |
+| AP1          | `codex/ap1-projektgrundlage`         | `Lay the repository foundation for expresto-examples`                     |
+| AP2          | `codex/ap2-server-bootstrap`         | `Integrate expresto-server and static app delivery`                       |
+| AP3          | `codex/ap3-login-und-jwt`            | `Implement demo login with Basic Auth and JWT flow`                       |
+| AP4          | `codex/ap4-frontend-navigation`      | `Create the responsive app layout and feature navigation`                 |
+| AP5          | `codex/ap5-doku-und-snippets`        | `Introduce shared documentation, snippets, and preview data`              |
+| AP6          | `codex/ap6-kernseiten`               | `Add the core pages for routing, security, hooks, and services`           |
+| AP7          | `codex/ap7-live-demos`               | `Connect scheduler, EventBus, and WebSocket through interactive UI demos` |
+| AP8          | `codex/ap8-public-api-und-contracts` | `Document the public API and stable framework contracts in the demo app`  |
+| AP9          | `codex/ap9-qa-und-dokumentation`     | `Complete the example app with tests, preview validation, and final docs` |
 
 Working rules:
 
