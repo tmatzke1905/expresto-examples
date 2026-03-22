@@ -11,6 +11,13 @@
     "node": ">=22"
   },
   "scripts": {
-    "check:structure": "node ./scripts/check-structure.mjs"
+    "build": "npm run build:web && npm run build:server && npm run build:preview",
+    "build:preview": "npm run build:preview --workspace @expresto-examples/web",
+    "build:server": "npm run build --workspace @expresto-examples/server",
+    "build:web": "npm run build --workspace @expresto-examples/web",
+    "check:structure": "node ./scripts/check-structure.mjs",
+    "dev:server": "npm run dev --workspace @expresto-examples/server",
+    "dev:web": "npm run dev --workspace @expresto-examples/web",
+    "start": "npm run start --workspace @expresto-examples/server"
   }
 }

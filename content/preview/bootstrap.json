@@ -1,0 +1,13 @@
+{
+  "appName": "expresto-examples",
+  "title": "Static Repository Preview",
+  "mode": "preview",
+  "status": "preview-ready",
+  "message": "This index.html was opened directly from the repository. API calls are replaced with curated preview data until the expresto-server runtime is started.",
+  "contextRoot": "/api",
+  "healthEndpoint": "/api/system/health",
+  "webDelivery": "preview/index.html",
+  "previewIndex": "preview/index.html",
+  "source": "content/preview/bootstrap.json",
+  "timestamp": "2026-03-22T00:00:00.000Z"
+}

@@ -1,0 +1,50 @@
+{
+  "port": 3100,
+  "host": "127.0.0.1",
+  "contextRoot": "/api",
+  "controllersPath": "./apps/server/dist/controllers",
+  "log": {
+    "level": "info",
+    "application": "./logs/application.log",
+    "access": "./logs/access.log"
+  },
+  "cors": {
+    "enabled": true,
+    "options": {
+      "origin": true,
+      "credentials": true
+    }
+  },
+  "helmet": {
+    "enabled": true,
+    "options": {}
+  },
+  "rateLimit": {
+    "enabled": false,
+    "options": {}
+  },
+  "metrics": {
+    "enabled": true,
+    "endpoint": "/__metrics"
+  },
+  "telemetry": {
+    "enabled": false,
+    "serviceName": "expresto-examples"
+  },
+  "auth": {
+    "jwt": {
+      "enabled": false
+    },
+    "basic": {
+      "enabled": false
+    }
+  },
+  "ops": {
+    "enabled": false
+  },
+  "scheduler": {
+    "enabled": false,
+    "mode": "attached",
+    "jobs": {}
+  }
+}

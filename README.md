@@ -178,6 +178,38 @@ preview/
 scripts/
 ```
 
+## AP2 Umsetzungsstand
+
+AP2 setzt auf dem Grundgeruest aus AP1 auf und fuehrt den ersten echten
+Bootstrap fuer Server, API und Web-Auslieferung ein.
+
+Bereits festgelegt und im Repository angelegt:
+
+- `expresto-server`-Bootstrap in `apps/server/src/main.ts`
+- JSON-Runtime-Konfiguration in `apps/server/config/middleware.config.json`
+- erster Demo-Endpunkt `GET /api/system/health`
+- React-Build mit Vite in `apps/web/`
+- regulärer Web-Build nach `apps/web/dist`
+- versionierter Preview-Build nach `preview/`
+- Root-Build-Kette ueber `npm run build`
+- Dokumentation der AP2-Entscheidungen in `docs/ap2-bootstrap.md`
+
+Aktuelle Befehle nach AP2:
+
+- `npm run build`
+- `npm run build:web`
+- `npm run build:server`
+- `npm run build:preview`
+- `npm run start`
+- `npm run check:structure`
+
+Wichtiger Versionshinweis:
+
+- `expresto-server` wird in AP2 bewusst als `1.0.0-beta` verwendet, weil das
+  aktuell die npm-`latest` des Ziel-Frameworks ist
+- die restlichen Bibliotheken wurden auf die zum Implementierungszeitpunkt
+  aktuellen stabilen Versionen gezogen
+
 ## Arbeitspakete
 
 ### AP1: Projektgrundlage und technische Leitplanken
@@ -223,6 +255,16 @@ Inhalt:
 Ergebnis:
 
 - eine lauffähige expresto-server-Anwendung, die API und Frontend gemeinsam ausliefert
+
+Aktuell umgesetzt:
+
+- `createServer()`-Bootstrap in `apps/server/src/main.ts`
+- JSON-Konfiguration in `apps/server/config/middleware.config.json`
+- erste Controller-Auslieferung ueber `apps/server/src/controllers/system.controller.ts`
+- statische Web-Auslieferung aus `apps/web/dist`
+- separater Preview-Build nach `preview/` mit relativen Asset-Pfaden
+- Root-Skripte fuer Build und Start
+- dokumentierte AP2-Entscheidungen in `docs/ap2-bootstrap.md`
 
 ### AP3: Login-Flow, Session-Grundlage und geschützte Anwendung
 

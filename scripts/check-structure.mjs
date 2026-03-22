@@ -6,14 +6,21 @@ const requiredPaths = [
   "package.json",
   "tsconfig.base.json",
   "docs/ap1-foundation.md",
+  "docs/ap2-bootstrap.md",
   "apps/server/package.json",
+  "apps/server/tsconfig.json",
+  "apps/server/config/middleware.config.json",
   "apps/server/src",
   "apps/web/package.json",
+  "apps/web/tsconfig.json",
+  "apps/web/vite.config.ts",
   "apps/web/src",
   "content/features",
   "content/snippets",
   "content/preview",
-  "preview/README.md"
+  "content/preview/bootstrap.json",
+  "preview/README.md",
+  "scripts/prepare-preview-dir.mjs"
 ];
 
 const missing = [];
@@ -34,4 +41,4 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log("AP1 foundation structure looks good.");
+console.log("Repository structure looks good.");
