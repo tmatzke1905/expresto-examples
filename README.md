@@ -4,6 +4,8 @@ Beispiel-Anwendung für das Framework [expresto-server](https://github.com/tmatz
 
 Dieses Repository soll eine vollständige Demo-Anwendung bereitstellen, in der `expresto-server` sowohl das React-Frontend ausliefert als auch für jedes relevante Framework-Feature passende Endpunkte, Beispielcode und Demo-Flows zur Verfügung stellt.
 
+Zusätzlich soll eine fertig kompilierte, statische Auslieferung Teil des Repositories sein, sodass Interessenten direkt die `index.html` öffnen und sich die Anwendung ohne Setup ansehen können.
+
 ## Zielbild
 
 Die Anwendung soll zeigen, wie ein Projekt mit `expresto-server` in der Praxis aufgebaut werden kann:
@@ -12,6 +14,7 @@ Die Anwendung soll zeigen, wie ein Projekt mit `expresto-server` in der Praxis a
 - die Startseite ist eine Login-Seite mit sichtbar eingeblendeten statischen Demo-Credentials
 - der Login läuft per HTTP Basic Auth und erzeugt danach ein JWT für alle weiteren geschützten Seiten und Requests
 - nach dem Login landet der Benutzer in einer responsiven Anwendung mit Navigation über alle Framework-Features
+- das Repository enthält zusätzlich eine fertig gebaute statische Vorschau, die per `index.html` lokal geöffnet werden kann
 - jede Feature-Seite erklärt ein Framework-Thema mit:
   - kurzer Beschreibung
   - passender Dokumentationszusammenfassung
@@ -45,6 +48,17 @@ Themen aus der Upstream-Dokumentation, die ausdrücklich nicht Teil des stabilen
 
 Diese beiden Themen können später als reine Hinweis- oder Roadmap-Seiten ergänzt werden, sollten aber nicht den ersten Build blockieren.
 
+## Auslieferungsmodi
+
+Die Beispiel-Anwendung soll in zwei Modi nutzbar sein:
+
+1. Vollständige Demo-Laufzeit mit `expresto-server`
+2. Statische Vorschau aus dem Repository durch direktes Öffnen der `index.html`
+
+Der vollständige Demo-Modus zeigt die echte Integration aus Server, API, Authentifizierung, Scheduler und WebSocket.
+
+Die statische Vorschau dient als sofort sichtbare Produkt- und Dokumentationsansicht ohne Setup. Da beim direkten Öffnen einer `index.html` keine laufende expresto-server-Runtime vorhanden ist, müssen serverabhängige Features in diesem Modus mit statischen Beispieldaten, Mock-Antworten oder klar gekennzeichneten Read-only-Demozuständen dargestellt werden.
+
 ## Zielarchitektur
 
 Geplante Architektur der Beispiel-Anwendung:
@@ -56,6 +70,7 @@ Geplante Architektur der Beispiel-Anwendung:
 5. Der Login ruft einen Backend-Endpunkt auf, der Basic Auth prüft und über die JWT-Helfer des Frameworks ein Token erzeugt.
 6. Das Frontend speichert das JWT clientseitig und nutzt es für weitere HTTP-Requests und WebSocket-Verbindungen.
 7. Alle Feature-Seiten verwenden eine gemeinsame Struktur für Beschreibung, Dokumentationsauszug, Codebeispiele und Live-Demo.
+8. Zusätzlich wird ein statischer Preview-Build erzeugt und versioniert, der mit relativen Assets direkt über `index.html` geöffnet werden kann.
 
 ## Geplanter Nutzerfluss
 
@@ -66,6 +81,13 @@ Geplante Architektur der Beispiel-Anwendung:
 5. Das Frontend wechselt in die geschützte Anwendungsansicht.
 6. Über das Menü kann der Benutzer zwischen allen Feature-Seiten wechseln.
 7. Jede Seite zeigt die zugehörigen Endpunkte, Beispielantworten und Quellcode-Snippets.
+
+Vorschaufluss ohne Server:
+
+1. Benutzer öffnet die versionierte `index.html` direkt aus dem Repository.
+2. Die Anwendung startet in einem statischen Preview-Modus.
+3. Navigation, Beschreibungen, Code-Beispiele und vorbereitete Demo-Daten sind ohne Backend sichtbar.
+4. Serverabhängige Aktionen sind als Mock oder Read-only-Beispiel gekennzeichnet.
 
 ## Vorgesehene Seitenstruktur
 
@@ -104,6 +126,7 @@ Inhalt:
 - Build- und Startkonzept definieren
 - Konventionen für Dateinamen, Feature-Ordner und Snippet-Ablage festlegen
 - Entscheidung treffen, wie Upstream-Dokumentation lokal gespiegelt oder kuratiert wird
+- Zielordner und Update-Prozess für den versionierten Preview-Build definieren
 
 Ergebnis:
 
@@ -121,6 +144,7 @@ Inhalt:
 - JSON-Konfiguration für die Demo-Anwendung anlegen
 - statische Auslieferung der React-Build-Artefakte über denselben Server konfigurieren
 - Trennung zwischen Web-App-Routen und API-Routen definieren
+- separaten statischen Build mit relativen Asset-Pfaden erzeugen, der lokal per `index.html` funktioniert
 
 Ergebnis:
 
@@ -139,6 +163,7 @@ Inhalt:
 - nach erfolgreicher Basic-Authentifizierung ein JWT erzeugen, z. B. mit `signToken()`
 - Frontend-Session für das JWT aufbauen
 - geschützte Navigationsstruktur für alle weiteren Seiten einführen
+- Preview-Modus für Login und geschützte Bereiche definieren, z. B. mit Mock-Session und klarer Kennzeichnung
 
 Ergebnis:
 
@@ -173,6 +198,7 @@ Inhalt:
 - Quellcode-Snippets lokal im Repository ablegen
 - Dokumentationsauszüge aus den expresto-server-Docs kuratieren
 - gemeinsame Komponenten für Snippet-Anzeige, Copy-Action und Doku-Referenzen bauen
+- statische Demo-Daten für den Preview-Modus zentral verwalten
 
 Ergebnis:
 
@@ -215,6 +241,7 @@ Inhalt:
 - Scheduler-Seite mit Job-Konfiguration, Job-Status und Event-Ausgabe
 - WebSocket-Seite mit JWT-gesichertem Verbindungsaufbau
 - Metrics-&-Observability-Seite mit Prometheus-Endpunkt und Telemetry-Hinweisen
+- für alle serverabhängigen Live-Demos eine statische Preview-Darstellung definieren
 
 Erwartete Demo-Inhalte:
 
@@ -252,6 +279,7 @@ Inhalt:
 - Frontend-Checks für Navigation und geschützte Bereiche
 - README, Startanleitung und Entwicklungsablauf vervollständigen
 - offene Punkte und spätere Ausbaustufen dokumentieren
+- Build-Prozess für die versionierte Preview-Auslieferung dokumentieren und validieren
 
 Ergebnis:
 
@@ -279,6 +307,7 @@ Die erste Version dieser Beispiel-Anwendung ist erreicht, wenn:
 - alle geplanten v1-Feature-Seiten erreichbar sind
 - jede Seite mindestens eine lauffähige Demo und passende Code-Snippets enthält
 - die React-Anwendung vollständig über `expresto-server` ausgeliefert wird
+- eine fertig gebaute statische Vorschau im Repository enthalten ist und per `index.html` geöffnet werden kann
 - die Navigation auf Desktop und Mobile sauber funktioniert
 - die README den Aufbau, Start und Scope der Anwendung klar beschreibt
 
