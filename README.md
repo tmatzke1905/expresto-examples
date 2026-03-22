@@ -15,6 +15,7 @@ Die Anwendung soll zeigen, wie ein Projekt mit `expresto-server` in der Praxis a
 - der Login läuft per HTTP Basic Auth und erzeugt danach ein JWT für alle weiteren geschützten Seiten und Requests
 - nach dem Login landet der Benutzer in einer responsiven Anwendung mit Navigation über alle Framework-Features
 - das Repository enthält zusätzlich eine fertig gebaute statische Vorschau, die per `index.html` lokal geöffnet werden kann
+- Scheduler, EventBus und WebSocket werden über sichtbare UI-Elemente als zusammenhängende Live-Demo dargestellt
 - jede Feature-Seite erklärt ein Framework-Thema mit:
   - kurzer Beschreibung
   - passender Dokumentationszusammenfassung
@@ -69,8 +70,37 @@ Geplante Architektur der Beispiel-Anwendung:
 4. Die Login-Seite zeigt die statischen Demo-Basic-Credentials offen an.
 5. Der Login ruft einen Backend-Endpunkt auf, der Basic Auth prüft und über die JWT-Helfer des Frameworks ein Token erzeugt.
 6. Das Frontend speichert das JWT clientseitig und nutzt es für weitere HTTP-Requests und WebSocket-Verbindungen.
-7. Alle Feature-Seiten verwenden eine gemeinsame Struktur für Beschreibung, Dokumentationsauszug, Codebeispiele und Live-Demo.
-8. Zusätzlich wird ein statischer Preview-Build erzeugt und versioniert, der mit relativen Assets direkt über `index.html` geöffnet werden kann.
+7. Der Scheduler erzeugt im Demo-Modus alle 10 Sekunden ein Ereignis mit der aktuellen Uhrzeit.
+8. Die WebSocket-Verbindung verteilt diese Uhrzeit in Echtzeit an die UI.
+9. Buttons in der UI rufen Demo-Endpunkte auf, die EventBus-Events mit vordefinierten Text-Payloads auslösen.
+10. EventBus-Listener leiten diese Demo-Nachrichten an die UI weiter, sodass ein Textfeld sichtbar befüllt wird.
+11. Alle Feature-Seiten verwenden eine gemeinsame Struktur für Beschreibung, Dokumentationsauszug, Codebeispiele und Live-Demo.
+12. Zusätzlich wird ein statischer Preview-Build erzeugt und versioniert, der mit relativen Assets direkt über `index.html` geöffnet werden kann.
+
+## Interaktive Live-Demos
+
+Für die Demo-Anwendung sollen insbesondere drei Features nicht nur dokumentiert, sondern direkt in der UI erlebbar gemacht werden:
+
+### Scheduler -> WebSocket -> UI
+
+- ein Demo-Scheduler-Job läuft alle 10 Sekunden
+- der Job erzeugt die aktuelle Server-Uhrzeit als Demo-Nachricht
+- die Nachricht wird an verbundene Clients per WebSocket übertragen
+- die UI zeigt Verbindungsstatus, letzte empfangene Uhrzeit und idealerweise einen kleinen Live-Feed
+
+### EventBus -> UI-Aktion -> Textfeld
+
+- auf der Event-System-Seite gibt es Buttons mit vorgegebenen Aktionen, z. B. `Begruessung`, `Warnung`, `Info`
+- ein Button-Klick ruft einen Backend-Demo-Endpunkt auf
+- das Backend emittiert ein EventBus-Event mit einem vorgefertigten Text
+- ein Listener verarbeitet das Event und überträgt den Text an die UI
+- die UI schreibt den empfangenen Text in ein sichtbares Textfeld
+
+### Vorschau ohne Server
+
+- in der statischen Repository-Vorschau werden diese Live-Demos mit vorbereiteten Beispielwerten simuliert
+- die gleichen UI-Elemente bleiben sichtbar
+- der Unterschied zwischen Live-Modus und Preview-Modus wird klar gekennzeichnet
 
 ## Geplanter Nutzerfluss
 
@@ -81,6 +111,7 @@ Geplante Architektur der Beispiel-Anwendung:
 5. Das Frontend wechselt in die geschützte Anwendungsansicht.
 6. Über das Menü kann der Benutzer zwischen allen Feature-Seiten wechseln.
 7. Jede Seite zeigt die zugehörigen Endpunkte, Beispielantworten und Quellcode-Snippets.
+8. Auf den Live-Demo-Seiten sieht der Benutzer WebSocket-Status, Scheduler-Ausgaben und EventBus-Interaktionen direkt in der UI.
 
 Vorschaufluss ohne Server:
 
@@ -88,6 +119,7 @@ Vorschaufluss ohne Server:
 2. Die Anwendung startet in einem statischen Preview-Modus.
 3. Navigation, Beschreibungen, Code-Beispiele und vorbereitete Demo-Daten sind ohne Backend sichtbar.
 4. Serverabhängige Aktionen sind als Mock oder Read-only-Beispiel gekennzeichnet.
+5. Scheduler-Uhrzeit, WebSocket-Nachrichten und EventBus-Texte werden mit vorbereiteten Beispielwerten dargestellt.
 
 ## Vorgesehene Seitenstruktur
 
@@ -102,9 +134,9 @@ Die Anwendung soll mindestens folgende Seiten bzw. Bereiche enthalten:
 | Security | Basic, JWT, Security Hooks | Login, geschützte Route, Auth-Status |
 | Lifecycle Hooks | Hook-Reihenfolge und Hook-Kontext | Hook-Logs bzw. registrierte Hooks |
 | Service Registry | Service-Registrierung und Nutzung | Demo-Service, Lookup, Shutdown-Hinweis |
-| Event System | EventBus, Events, Payloads | Demo-Events und Event-Log |
-| Scheduler | Cron-Jobs und Scheduler-Events | Demo-Job, Ausführungsstatus |
-| WebSocket | JWT-gesicherte Socket.IO-Verbindung | Connect-, Message- und Error-Demo |
+| Event System | EventBus, Events, Payloads | Buttons senden Demo-Events und befuellen ein Textfeld |
+| Scheduler | Cron-Jobs und Scheduler-Events | Demo-Job sendet alle 10s die aktuelle Uhrzeit |
+| WebSocket | JWT-gesicherte Socket.IO-Verbindung | Live-Übertragung von Scheduler-Zeit und EventBus-Nachrichten |
 | Metrics & Observability | Prometheus, Telemetry, Route-/Service-Sicht | `__metrics`, optionale Runtime-Infos |
 | Public API & Contracts | stabile API-Oberfläche und Verträge | Typen, Contracts, Copy-Paste-Snippets |
 
@@ -199,6 +231,7 @@ Inhalt:
 - Dokumentationsauszüge aus den expresto-server-Docs kuratieren
 - gemeinsame Komponenten für Snippet-Anzeige, Copy-Action und Doku-Referenzen bauen
 - statische Demo-Daten für den Preview-Modus zentral verwalten
+- vordefinierte Demo-Texte und Beispiel-Zeitereignisse für die interaktiven UI-Demos vorbereiten
 
 Ergebnis:
 
@@ -226,6 +259,7 @@ Erwartete Demo-Inhalte:
 - Hook-Ausführung und Hook-Kontext
 - registrierte Services
 - Event-Emission und Event-Logging
+- Buttons für vordefinierte EventBus-Aktionen und ein Textfeld für die Ergebnisanzeige
 
 Ergebnis:
 
@@ -238,15 +272,17 @@ Die stärker runtime-orientierten Features als lauffähige Demos ergänzen.
 
 Inhalt:
 
-- Scheduler-Seite mit Job-Konfiguration, Job-Status und Event-Ausgabe
-- WebSocket-Seite mit JWT-gesichertem Verbindungsaufbau
+- Scheduler-Seite mit Job-Konfiguration, Job-Status und einer Live-Uhrzeit, die alle 10 Sekunden aktualisiert wird
+- WebSocket-Seite mit JWT-gesichertem Verbindungsaufbau und Live-Empfang der Scheduler- und EventBus-Nachrichten
 - Metrics-&-Observability-Seite mit Prometheus-Endpunkt und Telemetry-Hinweisen
+- End-to-End-Demo definieren, in der Scheduler, EventBus und WebSocket gemeinsam mit UI-Widgets arbeiten
 - für alle serverabhängigen Live-Demos eine statische Preview-Darstellung definieren
 
 Erwartete Demo-Inhalte:
 
-- Beispiel-Job mit klar sichtbarer Ausführung
-- WebSocket-Verbindungsstatus, Message-Demo und Fehlerfälle
+- Beispiel-Job mit klar sichtbarer Ausführung und Versand der aktuellen Uhrzeit alle 10 Sekunden
+- WebSocket-Verbindungsstatus, Live-Nachrichtenfeed und Fehlerfälle
+- EventBus-Nachrichten, die per Button ausgelöst und in der UI als Textfeldinhalt dargestellt werden
 - Anzeige oder Erklärung relevanter Metriken wie `http_requests_total`
 
 Ergebnis:
@@ -285,6 +321,30 @@ Ergebnis:
 
 - wartbare Demo-Anwendung mit klarer Setup- und Nutzungsdokumentation
 
+## Branch- und Commit-Strategie
+
+Jedes Arbeitspaket bekommt einen eigenen Arbeitsbranch mit Prefix `codex/`.
+
+Nach Abschluss eines Arbeitspakets wird auf dem jeweiligen Branch ein inhaltlich passender Commit erstellt. Die folgende Liste definiert die vorgesehenen Branches und die geplante Commit-Richtung:
+
+| Arbeitspaket | Branch | Beispiel fuer die Abschluss-Commit-Nachricht |
+|------|--------|----------------------------------------------|
+| AP1 | `codex/ap1-projektgrundlage` | `Lege das Grundgeruest fuer expresto-examples an` |
+| AP2 | `codex/ap2-server-bootstrap` | `Binde expresto-server und die statische App-Auslieferung ein` |
+| AP3 | `codex/ap3-login-und-jwt` | `Implementiere Demo-Login mit Basic Auth und JWT-Flow` |
+| AP4 | `codex/ap4-frontend-navigation` | `Erstelle das responsive App-Layout und die Feature-Navigation` |
+| AP5 | `codex/ap5-doku-und-snippets` | `Fuehre ein gemeinsames System fuer Doku, Snippets und Preview-Daten ein` |
+| AP6 | `codex/ap6-kernseiten` | `Ergaenze die Kernseiten fuer Routing, Security, Hooks und Services` |
+| AP7 | `codex/ap7-live-demos` | `Verbinde Scheduler, EventBus und WebSocket mit interaktiven UI-Demos` |
+| AP8 | `codex/ap8-public-api-und-contracts` | `Dokumentiere Public API und stabile Framework-Contracts in der Demo-App` |
+| AP9 | `codex/ap9-qa-und-dokumentation` | `Runde die Beispiel-App mit Tests, Preview-Build und Abschlussdoku ab` |
+
+Arbeitsregel:
+
+- pro Arbeitspaket wird auf dem zugeordneten `codex/...`-Branch gearbeitet
+- nach Fertigstellung erfolgt genau ein klar formulierter Abschluss-Commit fuer das Arbeitspaket
+- anschliessend kann der Branch gemerged oder per Pull Request weiterverarbeitet werden
+
 ## Empfohlene Umsetzungsreihenfolge
 
 Die Arbeitspakete sollten in dieser Reihenfolge umgesetzt werden:
@@ -308,6 +368,8 @@ Die erste Version dieser Beispiel-Anwendung ist erreicht, wenn:
 - jede Seite mindestens eine lauffähige Demo und passende Code-Snippets enthält
 - die React-Anwendung vollständig über `expresto-server` ausgeliefert wird
 - eine fertig gebaute statische Vorschau im Repository enthalten ist und per `index.html` geöffnet werden kann
+- die UI zeigt im Live-Modus eine per WebSocket empfangene Uhrzeit, die vom Scheduler alle 10 Sekunden aktualisiert wird
+- EventBus-Aktionen können per Button ausgelöst werden und befüllen in der UI ein Textfeld mit vorgegebenen Texten
 - die Navigation auf Desktop und Mobile sauber funktioniert
 - die README den Aufbau, Start und Scope der Anwendung klar beschreibt
 
