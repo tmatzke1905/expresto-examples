@@ -210,6 +210,36 @@ Wichtiger Versionshinweis:
 - die restlichen Bibliotheken wurden auf die zum Implementierungszeitpunkt
   aktuellen stabilen Versionen gezogen
 
+## AP3 Umsetzungsstand
+
+AP3 fuehrt den ersten echten Sicherheits- und Session-Flow fuer die
+Beispiel-Anwendung ein.
+
+Bereits festgelegt und im Repository angelegt:
+
+- Login-Seite als neue Startansicht der Anwendung
+- sichtbare statische Demo-Credentials direkt in der UI
+- `POST /api/auth/login` als Basic-geschuetzter Login-Endpunkt
+- JWT-Erzeugung ueber `signToken(...)`
+- `GET /api/auth/session` als JWT-geschuetzter Session-Endpunkt
+- lokale Speicherung und Wiederherstellung des JWT im Frontend
+- geschuetzter App-Rahmen mit Feature-Menue fuer alle geplanten Seiten
+- Preview-Mock fuer denselben Login- und Session-Flow in `file://`-Modus
+- Detaildokumentation der AP3-Entscheidungen in `docs/ap3-auth-flow.md`
+
+Aktuelle Befehle nach AP3:
+
+- `npm run build`
+- `npm run start`
+- `npm run check:structure`
+
+Wichtiger Auth-Hinweis:
+
+- die Demo-Credentials sind bewusst statisch und werden auf der Login-Seite
+  angezeigt
+- das erzeugte JWT wird ab AP3 als Grundlage fuer die weitere geschuetzte
+  Anwendung verwendet
+
 ## Arbeitspakete
 
 ### AP1: Projektgrundlage und technische Leitplanken
@@ -285,6 +315,15 @@ Ergebnis:
 
 - reproduzierbarer Demo-Login
 - JWT-basierte Nutzung aller weiteren Features
+
+Aktuell umgesetzt:
+
+- Basic-geschuetzter Login-Endpunkt `POST /api/auth/login`
+- JWT-geschuetzter Session-Endpunkt `GET /api/auth/session`
+- Login-Seite mit eingeblendeten Demo-Credentials
+- JWT-Erzeugung und Session-Wiederherstellung im Frontend
+- geschuetzte Anwendung mit Feature-Menue und Sign-out
+- Preview-Session ueber `content/preview/auth-session.json`
 
 ### AP4: Responsives Frontend-Grundgerüst und Feature-Navigation
 

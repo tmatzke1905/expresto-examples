@@ -1,0 +1,34 @@
+{
+  "demoCredentials": {
+    "username": "demo",
+    "password": "showcase-2026!",
+    "hint": "These credentials are used both for the live Basic Auth login and for the repository preview."
+  },
+  "session": {
+    "claims": {
+      "auth": "jwt",
+      "displayName": "Demo User",
+      "mode": "preview",
+      "role": "demo-admin",
+      "scope": [
+        "examples:read",
+        "examples:preview",
+        "examples:navigate"
+      ],
+      "sub": "demo",
+      "username": "demo"
+    },
+    "expiresIn": "1h",
+    "features": [],
+    "issuedAt": "2026-03-22T00:00:00.000Z",
+    "mode": "preview",
+    "source": "content/preview/auth-session.json",
+    "token": "preview.demo.jwt.token",
+    "tokenType": "Bearer",
+    "user": {
+      "displayName": "Demo User",
+      "role": "demo-admin",
+      "username": "demo"
+    }
+  }
+}

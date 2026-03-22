@@ -1,17 +1,33 @@
-import { useEffect, useState } from "react";
+import { type FormEvent, useEffect, useState } from "react";
 
+import { LoginScreen } from "../features/auth/LoginScreen";
+import { ProtectedShell } from "../features/shell/ProtectedShell";
+import { type RuntimeSnapshot, loadRuntimeSnapshot } from "../lib/runtime-snapshot";
 import {
-  loadRuntimeSnapshot,
-  type RuntimeSnapshot,
-  runtimeFeatureCards
-} from "../lib/runtime-snapshot";
+  clearStoredToken,
+  demoCredentials,
+  featureMenuItems,
+  readStoredToken,
+  storeToken,
+  type SessionState,
+  verifySession,
+  loginWithBasic
+} from "../lib/session";
 
-type LoadState = "loading" | "ready" | "error";
+type AuthState = "authenticated" | "checking" | "logged_out";
+type LoadState = "error" | "loading" | "ready";
 
 export function App() {
+  const [authState, setAuthState] = useState<AuthState>("checking");
+  const [password, setPassword] = useState(demoCredentials.password);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [runtimeSnapshot, setRuntimeSnapshot] = useState<RuntimeSnapshot | null>(null);
+  const [selectedFeatureId, setSelectedFeatureId] = useState(featureMenuItems[0]?.id ?? "overview");
+  const [session, setSession] = useState<SessionState | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginError, setLoginError] = useState("");
+  const [username, setUsername] = useState(demoCredentials.username);
 
   useEffect(() => {
     let cancelled = false;
@@ -19,11 +35,35 @@ export function App() {
     async function load() {
       try {
         const snapshot = await loadRuntimeSnapshot();
+        const token = readStoredToken();
+
         if (cancelled) {
           return;
         }
+
         setRuntimeSnapshot(snapshot);
         setLoadState("ready");
+
+        if (!token) {
+          setAuthState("logged_out");
+          return;
+        }
+
+        try {
+          const restoredSession = await verifySession(token);
+          if (cancelled) {
+            return;
+          }
+
+          setSession(restoredSession);
+          setSelectedFeatureId(restoredSession.features[0]?.id ?? selectedFeatureId);
+          setAuthState("authenticated");
+        } catch {
+          clearStoredToken();
+          if (!cancelled) {
+            setAuthState("logged_out");
+          }
+        }
       } catch (error) {
         if (cancelled) {
           return;
@@ -31,6 +71,7 @@ export function App() {
         const message = error instanceof Error ? error.message : "Unknown runtime error";
         setErrorMessage(message);
         setLoadState("error");
+        setAuthState("logged_out");
       }
     }
 
@@ -44,87 +85,64 @@ export function App() {
   const modeLabel =
     runtimeSnapshot?.mode === "preview" ? "Repository Preview" : "Live expresto-server Runtime";
 
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setIsSubmitting(true);
+    setLoginError("");
+
+    try {
+      const nextSession = await loginWithBasic(username, password);
+      storeToken(nextSession.token);
+      setSession(nextSession);
+      setSelectedFeatureId(nextSession.features[0]?.id ?? selectedFeatureId);
+      setAuthState("authenticated");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Login failed.";
+      setLoginError(message);
+      setAuthState("logged_out");
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  function handleLogout() {
+    clearStoredToken();
+    setSession(null);
+    setLoginError("");
+    setAuthState("logged_out");
+  }
+
+  const selectedFeature =
+    session?.features.find(feature => feature.id === selectedFeatureId) ?? featureMenuItems[0];
+
+  if (authState === "authenticated" && session && selectedFeature) {
+    return (
+      <ProtectedShell
+        modeLabel={modeLabel}
+        onLogout={handleLogout}
+        onSelectFeature={setSelectedFeatureId}
+        runtimeSnapshot={runtimeSnapshot}
+        selectedFeature={selectedFeature}
+        session={session}
+      />
+    );
+  }
+
   return (
-    <main className="shell">
-      <section className="hero">
-        <div className="hero__eyebrow">{modeLabel}</div>
-        <h1>{runtimeSnapshot?.title ?? "Bootstrapping expresto-examples"}</h1>
-        <p className="hero__copy">
-          {runtimeSnapshot?.message ??
-            "Loading the first combined server and React delivery setup."}
-        </p>
-      </section>
-
-      <section className="status-strip">
-        <article className={`status-card status-card--${loadState}`}>
-          <span className="status-card__label">State</span>
-          <strong>{loadState === "ready" ? runtimeSnapshot?.status : loadState}</strong>
-          <span className="status-card__detail">
-            {loadState === "ready"
-              ? `Updated at ${runtimeSnapshot?.timestamp ?? "-"}`
-              : "The application is resolving its runtime source."}
-          </span>
-        </article>
-
-        <article className="status-card">
-          <span className="status-card__label">API Root</span>
-          <strong>{runtimeSnapshot?.contextRoot ?? "/api"}</strong>
-          <span className="status-card__detail">
-            First bootstrap endpoint: {runtimeSnapshot?.healthEndpoint ?? "/api/system/health"}
-          </span>
-        </article>
-
-        <article className="status-card">
-          <span className="status-card__label">Static Delivery</span>
-          <strong>{runtimeSnapshot?.webDelivery ?? "apps/web/dist"}</strong>
-          <span className="status-card__detail">
-            Preview entry: {runtimeSnapshot?.previewIndex ?? "preview/index.html"}
-          </span>
-        </article>
-      </section>
-
-      {loadState === "error" ? (
-        <section className="panel panel--error">
-          <h2>Runtime unavailable</h2>
-          <p>
-            The React application was built correctly, but it could not load the expected bootstrap
-            runtime payload.
-          </p>
-          <pre>{errorMessage}</pre>
-        </section>
-      ) : null}
-
-      <section className="panel">
-        <div className="panel__header">
-          <h2>AP2 Deliverables</h2>
-          <p>
-            This build proves the foundation for a combined API plus React delivery flow with a
-            versioned repository preview.
-          </p>
-        </div>
-
-        <div className="card-grid">
-          {runtimeFeatureCards.map(card => (
-            <article className="feature-card" key={card.title}>
-              <span className="feature-card__tag">{card.tag}</span>
-              <h3>{card.title}</h3>
-              <p>{card.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section className="panel panel--compact">
-        <div className="panel__header">
-          <h2>Source</h2>
-          <p>Current runtime metadata source for this page.</p>
-        </div>
-
-        <div className="source-chip">
-          <span>{runtimeSnapshot?.source ?? "Loading source information..."}</span>
-        </div>
-      </section>
-    </main>
+    <LoginScreen
+      credentials={demoCredentials}
+      errorMessage={errorMessage}
+      isSubmitting={isSubmitting || authState === "checking"}
+      loadState={loadState}
+      loginError={loginError}
+      modeLabel={modeLabel}
+      onPasswordChange={setPassword}
+      onSubmit={handleLogin}
+      onUsernameChange={setUsername}
+      password={password}
+      runtimeSnapshot={runtimeSnapshot}
+      username={username}
+    />
   );
 }
 

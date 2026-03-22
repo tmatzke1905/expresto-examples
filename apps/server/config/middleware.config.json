@@ -33,10 +33,16 @@
   },
   "auth": {
     "jwt": {
-      "enabled": false
+      "enabled": true,
+      "secret": "expresto_examples_runtime_secret_2026_live_auth",
+      "algorithm": "HS256",
+      "expiresIn": "1h"
     },
     "basic": {
-      "enabled": false
+      "enabled": true,
+      "users": {
+        "demo": "showcase-2026!"
+      }
     }
   },
   "ops": {
