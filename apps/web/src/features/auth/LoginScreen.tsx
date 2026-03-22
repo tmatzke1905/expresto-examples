@@ -6,6 +6,7 @@ import type { DemoCredentials } from "../../lib/session";
 type LoadState = "error" | "loading" | "ready";
 
 type LoginScreenProps = {
+  applicationTitle: string;
   credentials: DemoCredentials;
   errorMessage: string;
   isSubmitting: boolean;
@@ -21,6 +22,7 @@ type LoginScreenProps = {
 };
 
 export function LoginScreen({
+  applicationTitle,
   credentials,
   errorMessage,
   isSubmitting,
@@ -38,10 +40,14 @@ export function LoginScreen({
     <main className="shell shell--auth">
       <section className="hero hero--login">
         <div className="hero__eyebrow">{modeLabel}</div>
-        <h1>{runtimeSnapshot?.title ?? "Login demo is loading"}</h1>
+        <h1>{applicationTitle}</h1>
         <p className="hero__copy">
           {runtimeSnapshot?.message ??
-            "Loading the runtime and the first authentication flow for expresto-examples."}
+            "Loading the runtime and the authentication flow for expresto-examples."}
+        </p>
+        <p className="hero__supporting-copy">
+          Start with the static demo credentials below. The backend accepts Basic Auth and returns a
+          JWT for the protected workspace.
         </p>
       </section>
 
@@ -65,6 +71,9 @@ export function LoginScreen({
               <strong>{credentials.password}</strong>
             </div>
             <p className="credential-panel__hint">{credentials.hint}</p>
+            <p className="credential-panel__hint">
+              Fixed application title: <strong>{applicationTitle}</strong>
+            </p>
           </div>
         </article>
 

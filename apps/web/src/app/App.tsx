@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from "react";
 
 import { LoginScreen } from "../features/auth/LoginScreen";
 import { ProtectedShell } from "../features/shell/ProtectedShell";
+import { APP_TITLE, resolveFeatureFromHash, updateFeatureHash } from "../lib/app-config";
 import { type RuntimeSnapshot, loadRuntimeSnapshot } from "../lib/runtime-snapshot";
 import {
   clearStoredToken,
@@ -22,12 +23,18 @@ export function App() {
   const [password, setPassword] = useState(demoCredentials.password);
   const [loadState, setLoadState] = useState<LoadState>("loading");
   const [runtimeSnapshot, setRuntimeSnapshot] = useState<RuntimeSnapshot | null>(null);
-  const [selectedFeatureId, setSelectedFeatureId] = useState(featureMenuItems[0]?.id ?? "overview");
+  const [selectedFeatureId, setSelectedFeatureId] = useState(
+    () => resolveFeatureFromHash(featureMenuItems) ?? featureMenuItems[0]?.id ?? ""
+  );
   const [session, setSession] = useState<SessionState | null>(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginError, setLoginError] = useState("");
   const [username, setUsername] = useState(demoCredentials.username);
+
+  useEffect(() => {
+    document.title = APP_TITLE;
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -56,7 +63,9 @@ export function App() {
           }
 
           setSession(restoredSession);
-          setSelectedFeatureId(restoredSession.features[0]?.id ?? selectedFeatureId);
+          setSelectedFeatureId(
+            resolveFeatureFromHash(restoredSession.features) ?? restoredSession.features[0]?.id ?? ""
+          );
           setAuthState("authenticated");
         } catch {
           clearStoredToken();
@@ -82,6 +91,27 @@ export function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (authState !== "authenticated" || !session) {
+      return;
+    }
+
+    const hasSelectedFeature = session.features.some(feature => feature.id === selectedFeatureId);
+
+    if (!hasSelectedFeature) {
+      const fallbackFeatureId = resolveFeatureFromHash(session.features) ?? session.features[0]?.id ?? "";
+
+      if (fallbackFeatureId !== selectedFeatureId) {
+        setSelectedFeatureId(fallbackFeatureId);
+      }
+      return;
+    }
+
+    if (selectedFeatureId.length > 0) {
+      updateFeatureHash(selectedFeatureId);
+    }
+  }, [authState, selectedFeatureId, session]);
+
   const modeLabel =
     runtimeSnapshot?.mode === "preview" ? "Repository Preview" : "Live expresto-server Runtime";
 
@@ -94,7 +124,9 @@ export function App() {
       const nextSession = await loginWithBasic(username, password);
       storeToken(nextSession.token);
       setSession(nextSession);
-      setSelectedFeatureId(nextSession.features[0]?.id ?? selectedFeatureId);
+      setSelectedFeatureId(
+        resolveFeatureFromHash(nextSession.features) ?? nextSession.features[0]?.id ?? ""
+      );
       setAuthState("authenticated");
     } catch (error) {
       const message = error instanceof Error ? error.message : "Login failed.";
@@ -112,15 +144,20 @@ export function App() {
     setAuthState("logged_out");
   }
 
-  const selectedFeature =
-    session?.features.find(feature => feature.id === selectedFeatureId) ?? featureMenuItems[0];
+  function handleSelectFeature(featureId: string) {
+    setSelectedFeatureId(featureId);
+  }
 
-  if (authState === "authenticated" && session && selectedFeature) {
+  const selectedFeature =
+    session?.features.find(feature => feature.id === selectedFeatureId) ?? session?.features[0] ?? null;
+
+  if (authState === "authenticated" && session) {
     return (
       <ProtectedShell
+        applicationTitle={APP_TITLE}
         modeLabel={modeLabel}
         onLogout={handleLogout}
-        onSelectFeature={setSelectedFeatureId}
+        onSelectFeature={handleSelectFeature}
         runtimeSnapshot={runtimeSnapshot}
         selectedFeature={selectedFeature}
         session={session}
@@ -130,6 +167,7 @@ export function App() {
 
   return (
     <LoginScreen
+      applicationTitle={APP_TITLE}
       credentials={demoCredentials}
       errorMessage={errorMessage}
       isSubmitting={isSubmitting || authState === "checking"}
