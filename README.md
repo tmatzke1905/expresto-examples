@@ -145,6 +145,39 @@ Optionale spätere Seiten:
 - Roadmap: Clustering
 - Roadmap: Plugin System
 
+## AP1 Umsetzungsstand
+
+AP1 startet mit einem belastbaren Repository-Grundgeruest, auf dem die
+spaeteren Arbeitspakete direkt aufsetzen koennen.
+
+Bereits festgelegt und im Repository angelegt:
+
+- Workspace-Struktur mit `apps/server` fuer die expresto-server-Runtime und
+  `apps/web` fuer die React-Anwendung
+- Inhaltsverzeichnis `content/` fuer Feature-Texte, Code-Snippets und
+  Preview-Daten
+- versionierter Zielordner `preview/` fuer die statische Auslieferung im
+  Repository
+- gemeinsame Basisdateien wie `.nvmrc`, `.editorconfig` und
+  `tsconfig.base.json`
+- Projektentscheidung `Node.js 22` als Mindest-Basis passend zum
+  expresto-server-Runtime-Scope
+- Repo-Skript `npm run check:structure` zur Pruefung der AP1-Grundstruktur
+- Detaildokumentation der Struktur- und Inhaltsentscheidungen in
+  `docs/ap1-foundation.md`
+
+Kurzstruktur des Repositories nach AP1:
+
+```txt
+apps/
+  server/
+  web/
+content/
+docs/
+preview/
+scripts/
+```
+
 ## Arbeitspakete
 
 ### AP1: Projektgrundlage und technische Leitplanken
@@ -164,6 +197,15 @@ Ergebnis:
 
 - stabiles Repository-Grundgerüst
 - nachvollziehbare Struktur für alle folgenden Feature-Pakete
+
+Aktuell umgesetzt:
+
+- Root-Workspace mit `apps/server` und `apps/web`
+- strukturierte Ablage für Inhalte unter `content/`
+- dokumentierter Preview-Zielordner `preview/`
+- gemeinsame Konfigurationsbasis für Node- und TypeScript-Projekte
+- dokumentierte Detailentscheidungen in `docs/ap1-foundation.md`
+- Repo-Validierung über `npm run check:structure`
 
 ### AP2: expresto-server Bootstrap und Auslieferung der React-Anwendung
 
@@ -342,6 +384,17 @@ Nach Abschluss eines Arbeitspakets wird auf dem jeweiligen Branch ein inhaltlich
 ## Dokumentationsregel Pro Arbeitspaket
 
 Jedes Arbeitspaket muss nicht nur implementiert, sondern auch sauber dokumentiert werden.
+
+## Versionsrichtlinie Fuer Bibliotheken
+
+Fuer alle eingesetzten Bibliotheken soll jeweils die zum Implementierungszeitpunkt aktuelle stabile Version verwendet werden.
+
+Das bedeutet:
+
+- keine veralteten Tutorial-Versionen oder bewusst alte Major-Versionen verwenden
+- Vorabversionen wie `alpha`, `beta`, `rc` oder `canary` nur einsetzen, wenn sie ausdruecklich benoetigt und in der README begruendet werden
+- vor der Installation oder Aktualisierung einer Bibliothek wird die aktuelle stabile Version noch einmal ueber die offizielle Paketquelle oder Hersteller-Dokumentation geprueft
+- installierte Abhaengigkeiten sollen anschliessend konkret gelockt werden, damit der Build reproduzierbar bleibt
 
 Pflicht im Code:
 

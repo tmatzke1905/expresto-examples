@@ -1,0 +1,16 @@
+{
+  "name": "expresto-examples",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Example application workspace for expresto-server",
+  "workspaces": [
+    "apps/server",
+    "apps/web"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "check:structure": "node ./scripts/check-structure.mjs"
+  }
+}
