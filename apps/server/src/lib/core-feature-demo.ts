@@ -134,7 +134,15 @@ const routeCatalog: RouteEntry[] = [
     security: "public",
     controller: "demo.controller.ts",
     source: "apps/server/src/controllers/demo.controller.ts",
-    summary: "Runtime-backed AP6 data for routes, hooks, services, and EventBus state."
+    summary: "Runtime-backed data for routes, hooks, services, and EventBus state."
+  },
+  {
+    method: "GET",
+    path: "/api/demo/live-demo",
+    security: "public",
+    controller: "demo.controller.ts",
+    source: "apps/server/src/controllers/demo.controller.ts",
+    summary: "Live demo snapshot for scheduler state, transport feed, metrics preview, and websocket readiness."
   },
   {
     method: "POST",
@@ -162,7 +170,7 @@ const eventPresets: EventPreset[] = [
   {
     id: "info",
     label: "Info",
-    text: "Informational EventBus preset delivered from the server-side demo controller into the AP6 workspace page.",
+    text: "Informational EventBus preset delivered from the server-side demo controller into the workspace message board.",
     tone: "info"
   }
 ];
@@ -254,7 +262,7 @@ function createHookDescription(hook: LifecycleHook, context: HookContext): strin
   }
 
   if (hook === LifecycleHook.STARTUP) {
-    return "Registered the AP6 demo services in the ServiceRegistry for route and message-board inspection.";
+    return "Registered the demo services in the ServiceRegistry for route, message-board, and live-feed inspection.";
   }
 
   if (hook === LifecycleHook.PRE_INIT) {
@@ -302,7 +310,7 @@ function buildServiceEntries(): ServiceEntry[] {
       name: "featureCatalog",
       kind: "FeatureCatalogService",
       source: "apps/server/src/lib/core-feature-demo.ts",
-      summary: "Keeps the documented AP6 route catalog aligned with the controller layer.",
+      summary: "Keeps the documented route catalog aligned with the controller layer.",
       capabilities: [
         "List documented controller routes",
         "Expose route paths for the UI and documentation snippets",
@@ -318,6 +326,17 @@ function buildServiceEntries(): ServiceEntry[] {
         "Persist the latest selected message in memory",
         "Update state from protected EventBus presets",
         "Reset state during shutdown"
+      ]
+    },
+    {
+      name: "liveDemoFeed",
+      kind: "LiveDemoFeedService",
+      source: "apps/server/src/lib/live-demo-runtime.ts",
+      summary: "Collects scheduler ticks, transport feed entries, and live-demo runtime state for the advanced pages.",
+      capabilities: [
+        "Store recent scheduler ticks for the workspace",
+        "Build the shared backend feed for scheduler and EventBus messages",
+        "Support the metrics and websocket readiness pages with one runtime snapshot"
       ]
     }
   ];

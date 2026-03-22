@@ -10,6 +10,14 @@ export default {
       }
     },
     {
+      method: "get",
+      path: "/live-demo",
+      secure: false,
+      handler: async (_req: ExtRequest, res: ExtResponse) => {
+        res.json(await getLiveDemoRuntime());
+      }
+    },
+    {
       method: "post",
       path: "/events/:presetId",
       secure: "jwt",

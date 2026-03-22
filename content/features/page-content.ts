@@ -405,30 +405,27 @@ export const featurePageContent: Record<string, AuthoredFeaturePageContent> = {
     eyebrow: "Scheduler docs",
     intro: "Recurring jobs and the scheduled clock message.",
     description:
-      "The scheduler page prepares the live demo in which a background job emits the current time every ten seconds and hands it to the WebSocket layer.",
+      "The scheduler page now shows the live clock job that emits the current time every ten seconds and adds it to the shared backend feed.",
     highlights: [
       "The server-side scheduler owns the recurring time production.",
       "Every ten seconds the demo emits one clock event.",
-      "The UI will show the latest received timestamp plus a short activity feed."
+      "The workspace shows the latest received timestamp plus a recent activity feed."
     ],
     demo: {
-      status: "planned",
-      title: "Planned scheduled time feed",
+      status: "implemented",
+      title: "Live scheduled time feed",
       summary:
-        "The shared content system keeps the preview timestamps, documentation notes, and code-example structure ready for the later job-driven demo.",
+        "The scheduler page reads the current tick state from the backend so the clock demo is no longer only a preview surface.",
       bullets: [
         "One job runs every ten seconds",
         "The current time becomes a demo message payload",
-        "The WebSocket page will display the live updates"
+        "The transport feed collects those ticks for later real-time delivery"
       ]
     },
     codeExamples: [
       {
-        type: "navigation-entry",
-        title: "Current page registration",
-        description: "The feature already exists in the shared navigation map and can be reviewed in the protected workspace.",
-        emphasis: "current",
-        sourceLabel: "Current implementation"
+        type: "shared-snippet",
+        snippetId: "scheduler.clock-job"
       },
       {
         type: "shared-snippet",
@@ -442,9 +439,49 @@ export const featurePageContent: Record<string, AuthoredFeaturePageContent> = {
         ...docsReference("Scheduler docs", "scheduler.md")
       },
       {
-        title: "Downstream message flow",
-        body: "The event-system guide provides the event-driven model that this later scheduler demo will feed into before the message reaches the WebSocket UI.",
+        title: "Event-driven output",
+        body: "The event-system guide matters here because the scheduler job emits a typed backend event that the transport feed can reuse immediately.",
         ...docsReference("Event System docs", "event-system.md")
+      }
+    ]
+  },
+  metrics: {
+    eyebrow: "Metrics docs",
+    intro: "Prometheus metrics and live runtime visibility.",
+    description:
+      "The metrics page now shows the configured metrics endpoint and a live preview of exported Prometheus samples from the running server.",
+    highlights: [
+      "The runtime exposes a Prometheus endpoint through the shared server.",
+      "The workspace reads back a short sample of exported metrics lines for visibility.",
+      "The metrics preview stays aligned with the current runtime configuration and endpoint path."
+    ],
+    demo: {
+      status: "implemented",
+      title: "Live metrics preview",
+      summary:
+        "The metrics page loads a short preview of the current Prometheus output so the observability surface is no longer only a future placeholder.",
+      bullets: [
+        "Configured metrics endpoint path",
+        "Sample metric names from the current runtime",
+        "Raw Prometheus lines rendered directly in the workspace"
+      ]
+    },
+    codeExamples: [
+      {
+        type: "shared-snippet",
+        snippetId: "live-demo.runtime-loader"
+      }
+    ],
+    documentation: [
+      {
+        title: "Prometheus endpoint",
+        body: "The metrics guide documents the built-in Prometheus export endpoint and the runtime metrics that expresto-server keeps for requests, services, and route registration.",
+        ...docsReference("Metrics docs", "metrics.md")
+      },
+      {
+        title: "Configuration switch",
+        body: "The configuration guide explains how metrics are enabled and how the endpoint path can be customized, which is reflected directly by the runtime snapshot on this page.",
+        ...docsReference("Configuration docs", "configuration.md")
       }
     ]
   },
@@ -452,30 +489,27 @@ export const featurePageContent: Record<string, AuthoredFeaturePageContent> = {
     eyebrow: "WebSocket docs",
     intro: "Protected real-time delivery for clock ticks and EventBus messages.",
     description:
-      "The WebSocket page is reserved for the later real-time transport layer that forwards scheduler ticks and EventBus messages into the authenticated UI.",
+      "The WebSocket page now shows the backend feed and socket readiness state while the dedicated client-side socket bridge is still being layered on top.",
     highlights: [
       "JWT state from the current security flow becomes the transport credential.",
-      "Clock ticks and EventBus messages share one visible feed in the UI.",
-      "The page will make connection state and reconnection behavior visible."
+      "Clock ticks and EventBus messages already share one visible backend feed.",
+      "The page keeps the socket path and runtime readiness visible while the live bridge is still being completed."
     ],
     demo: {
       status: "planned",
-      title: "Planned socket demo",
+      title: "Socket transport groundwork",
       summary:
-        "The shared content system prepares the page, preview feed, and authored content structure for the JWT-protected live connection that arrives later.",
+        "The backend feed and socket readiness data are already available. The dedicated live socket client is the next step on top of that shared transport model.",
       bullets: [
         "Connection state indicator",
-        "Latest clock tick from the scheduler",
-        "Shared feed for EventBus and scheduler messages"
+        "Shared feed for EventBus and scheduler messages",
+        "Configured socket path and JWT transport expectation"
       ]
     },
     codeExamples: [
       {
-        type: "navigation-entry",
-        title: "Current page registration",
-        description: "The page is already reachable in the shared navigation even before the transport code is added.",
-        emphasis: "current",
-        sourceLabel: "Current implementation"
+        type: "shared-snippet",
+        snippetId: "live-demo.runtime-loader"
       },
       {
         type: "shared-snippet",
@@ -485,7 +519,7 @@ export const featurePageContent: Record<string, AuthoredFeaturePageContent> = {
     documentation: [
       {
         title: "Socket runtime",
-        body: "The websocket guide documents the shared HTTP server integration, Socket.IO path, and protected transport behavior that this page is preparing to demonstrate.",
+        body: "The websocket guide documents the shared HTTP server integration, Socket.IO path, and protected transport behavior that this page is incrementally preparing.",
         ...docsReference("WebSocket docs", "websocket.md")
       },
       {

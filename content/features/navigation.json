@@ -60,9 +60,9 @@
       "id": "scheduler",
       "title": "Scheduler",
       "summary": "Cron-driven background jobs inside the runtime.",
-      "detail": "The scheduler page prepares the later live clock demo in which a recurring server-side job produces the visible time feed.",
+      "detail": "The scheduler page now shows the live clock job, the latest runtime tick, and the recent scheduler feed collected from the backend.",
       "package": "Live demos",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "id": "websocket",
@@ -76,9 +76,9 @@
       "id": "metrics",
       "title": "Metrics & Observability",
       "summary": "Prometheus metrics and runtime observability.",
-      "detail": "This page will collect the metrics endpoint, tracing notes, and runtime health references as the observability coverage grows.",
+      "detail": "The metrics page now shows the current metrics endpoint and a live preview of exported Prometheus lines from the running server.",
       "package": "Observability",
-      "status": "planned"
+      "status": "implemented"
     },
     {
       "id": "public-api",

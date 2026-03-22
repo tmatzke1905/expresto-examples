@@ -49,8 +49,14 @@
     "enabled": false
   },
   "scheduler": {
-    "enabled": false,
+    "enabled": true,
     "mode": "attached",
-    "jobs": {}
+    "jobs": {
+      "clockDemo": {
+        "enabled": true,
+        "cron": "*/10 * * * * *",
+        "module": "./apps/server/src/jobs/clockDemo.job.ts"
+      }
+    }
   }
 }

@@ -11,4 +11,6 @@ This directory separates authored content from runtime code.
   without a running server
 - `preview/core-features.json`: prepared AP6 runtime data for routes, hooks,
   services, and the EventBus page
+- `preview/live-runtime.json`: prepared scheduler, transport, websocket, and
+  metrics data for the advanced runtime pages
 - `preview/live-demo.json`: prepared EventBus, scheduler, and socket preview values for planned demos

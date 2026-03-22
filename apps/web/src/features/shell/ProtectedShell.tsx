@@ -10,7 +10,7 @@ import {
   loadCoreFeatureRuntime,
   type CoreFeatureRuntime
 } from "../../lib/core-feature-runtime";
-import { previewDemoData } from "../../lib/preview-demo-data";
+import { loadLiveDemoRuntime, type LiveDemoRuntime } from "../../lib/live-demo-runtime";
 import { runtimeFeatureCards, type RuntimeSnapshot } from "../../lib/runtime-snapshot";
 import type { FeatureMenuItem, SessionState } from "../../lib/session";
 
@@ -25,6 +25,7 @@ type ProtectedShellProps = {
 };
 
 type CoreFeatureLoadState = "error" | "loading" | "ready";
+type LiveDemoLoadState = "error" | "loading" | "ready";
 
 function formatStatusLabel(value: string): string {
   if (value === "implemented") {
@@ -91,6 +92,9 @@ function renderFeatureDemo(
   coreFeatureRuntime: CoreFeatureRuntime | null,
   coreFeatureLoadState: CoreFeatureLoadState,
   coreFeatureErrorMessage: string,
+  liveDemoRuntime: LiveDemoRuntime | null,
+  liveDemoLoadState: LiveDemoLoadState,
+  liveDemoErrorMessage: string,
   pendingPresetId: string | null,
   eventErrorMessage: string,
   onTriggerEventPreset: (presetId: string) => void
@@ -408,11 +412,38 @@ function renderFeatureDemo(
   }
 
   if (feature.id === "metrics") {
+    if (!liveDemoRuntime) {
+      return renderCoreFeatureStatePanel(
+        liveDemoLoadState,
+        liveDemoErrorMessage,
+        "metrics"
+      );
+    }
+
     return (
-      <PageStatePanel
-        body="Metrics and observability remain part of the planned documentation surface. The bootstrap page already exposes the metrics endpoint path from the current config."
-        title="Observability page is planned"
-      />
+      <div className="demo-stack">
+        <div className="auth-flow-grid">
+          <article className="detail-card">
+            <span className="detail-card__label">Metrics endpoint</span>
+            <strong>{liveDemoRuntime.metrics.endpointPath}</strong>
+            <p>The workspace reads a short preview directly from the running Prometheus export.</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Metric names</span>
+            <strong>{liveDemoRuntime.metrics.sampleMetricNames.length}</strong>
+            <p>{liveDemoRuntime.metrics.sampleMetricNames.join(", ") || "No metrics collected yet."}</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Preview status</span>
+            <strong>{liveDemoRuntime.metrics.status}</strong>
+            <p>{liveDemoRuntime.metrics.updatedAt ?? "No metrics preview has been loaded yet."}</p>
+          </article>
+        </div>
+
+        <pre className="token-viewer">
+          {liveDemoRuntime.metrics.sampleLines.join("\n") || "No metrics sample available yet."}
+        </pre>
+      </div>
     );
   }
 
@@ -426,26 +457,40 @@ function renderFeatureDemo(
   }
 
   if (feature.id === "scheduler") {
+    if (!liveDemoRuntime) {
+      return renderCoreFeatureStatePanel(
+        liveDemoLoadState,
+        liveDemoErrorMessage,
+        "scheduler"
+      );
+    }
+
     return (
       <div className="demo-stack">
         <div className="auth-flow-grid">
           <article className="detail-card">
             <span className="detail-card__label">Demo interval</span>
-            <strong>{previewDemoData.scheduler.intervalLabel}</strong>
-            <p>The planned scheduler job emits one visible clock-tick event.</p>
+            <strong>{liveDemoRuntime.scheduler.intervalLabel}</strong>
+            <p>The running scheduler job emits one visible clock-tick event every ten seconds.</p>
           </article>
           <article className="detail-card">
-            <span className="detail-card__label">Latest preview value</span>
-            <strong>{previewDemoData.scheduler.latestTick}</strong>
-            <p>A later live runtime step will replace this prepared value with the real server time feed.</p>
+            <span className="detail-card__label">Latest live tick</span>
+            <strong>{liveDemoRuntime.scheduler.latestTick}</strong>
+            <p>The scheduler page now reads the current backend tick instead of a prepared preview-only value.</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Recent ticks</span>
+            <strong>{liveDemoRuntime.scheduler.recentTicks.length}</strong>
+            <p>The backend keeps the recent clock feed available for the workspace.</p>
           </article>
         </div>
 
         <div className="preview-feed-list">
-          {previewDemoData.scheduler.recentTicks.map(value => (
-            <div className="preview-feed-item" key={value}>
-              <strong>{value}</strong>
-              <span>Prepared scheduler tick for preview mode</span>
+          {liveDemoRuntime.scheduler.recentTicks.map(entry => (
+            <div className="preview-feed-item" key={`${entry.isoTime}-${entry.recordedAt}`}>
+              <strong>{entry.timeLabel}</strong>
+              <span className="preview-feed-item__meta">{entry.recordedAt}</span>
+              <span>Source: {entry.source}</span>
             </div>
           ))}
         </div>
@@ -454,26 +499,46 @@ function renderFeatureDemo(
   }
 
   if (feature.id === "websocket") {
+    if (!liveDemoRuntime) {
+      return renderCoreFeatureStatePanel(
+        liveDemoLoadState,
+        liveDemoErrorMessage,
+        "websocket"
+      );
+    }
+
     return (
       <div className="demo-stack">
         <div className="auth-flow-grid">
           <article className="detail-card">
             <span className="detail-card__label">Connection state</span>
-            <strong>{previewDemoData.websocket.connectionState}</strong>
-            <p>The later socket view will replace this prepared state with the live transport state.</p>
+            <strong>{liveDemoRuntime.websocket.status}</strong>
+            <p>{liveDemoRuntime.websocket.note}</p>
           </article>
           <article className="detail-card">
-            <span className="detail-card__label">Shared feed</span>
-            <strong>{previewDemoData.websocket.transportLabel}</strong>
-            <p>Scheduler ticks and EventBus updates already share one prepared preview feed.</p>
+            <span className="detail-card__label">Socket path</span>
+            <strong>{liveDemoRuntime.websocket.path}</strong>
+            <p>The documented transport path is already visible in the workspace.</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Transport auth</span>
+            <strong>{liveDemoRuntime.websocket.authMode}</strong>
+            <p>The later socket bridge reuses the same JWT session that already protects the API.</p>
           </article>
         </div>
 
+        <div className="detail-card">
+          <span className="detail-card__label">Backend feed</span>
+          <strong>{liveDemoRuntime.transport.status}</strong>
+          <p>{liveDemoRuntime.transport.note}</p>
+        </div>
+
         <div className="preview-feed-list">
-          {previewDemoData.websocket.messages.map(message => (
-            <div className="preview-feed-item" key={message}>
-              <strong>{message}</strong>
-              <span>Prepared preview message</span>
+          {liveDemoRuntime.transport.messages.map(message => (
+            <div className="preview-feed-item" key={`${message.kind}-${message.recordedAt}-${message.summary}`}>
+              <strong>{message.summary}</strong>
+              <span className="preview-feed-item__meta">{message.recordedAt}</span>
+              <span>Source: {message.source}</span>
             </div>
           ))}
         </div>
@@ -502,6 +567,9 @@ export function ProtectedShell({
   const [coreFeatureRuntime, setCoreFeatureRuntime] = useState<CoreFeatureRuntime | null>(null);
   const [coreFeatureLoadState, setCoreFeatureLoadState] = useState<CoreFeatureLoadState>("loading");
   const [coreFeatureErrorMessage, setCoreFeatureErrorMessage] = useState("");
+  const [liveDemoRuntime, setLiveDemoRuntime] = useState<LiveDemoRuntime | null>(null);
+  const [liveDemoLoadState, setLiveDemoLoadState] = useState<LiveDemoLoadState>("loading");
+  const [liveDemoErrorMessage, setLiveDemoErrorMessage] = useState("");
   const [pendingPresetId, setPendingPresetId] = useState<string | null>(null);
   const [eventErrorMessage, setEventErrorMessage] = useState("");
   const page = selectedFeature ? getFeaturePageDescriptor(selectedFeature) : null;
@@ -526,6 +594,13 @@ export function ProtectedShell({
             }
           : current
       );
+      try {
+        const nextLiveDemoRuntime = await loadLiveDemoRuntime();
+        setLiveDemoRuntime(nextLiveDemoRuntime);
+        setLiveDemoLoadState("ready");
+      } catch {
+        // Keep the EventBus interaction responsive even if the follow-up live feed refresh fails.
+      }
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "The EventBus preset could not be emitted.";
@@ -572,6 +647,50 @@ export function ProtectedShell({
 
     return () => {
       cancelled = true;
+    };
+  }, [session.token]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function refreshLiveRuntime(isInitialLoad: boolean) {
+      if (isInitialLoad) {
+        setLiveDemoLoadState("loading");
+      }
+
+      setLiveDemoErrorMessage("");
+
+      try {
+        const nextRuntime = await loadLiveDemoRuntime();
+
+        if (cancelled) {
+          return;
+        }
+
+        setLiveDemoRuntime(nextRuntime);
+        setLiveDemoLoadState("ready");
+      } catch (error) {
+        if (cancelled) {
+          return;
+        }
+
+        const message =
+          error instanceof Error ? error.message : "The live demo runtime data could not be loaded.";
+        setLiveDemoRuntime(null);
+        setLiveDemoErrorMessage(message);
+        setLiveDemoLoadState("error");
+      }
+    }
+
+    void refreshLiveRuntime(true);
+
+    const intervalId = window.setInterval(() => {
+      void refreshLiveRuntime(false);
+    }, 5000);
+
+    return () => {
+      cancelled = true;
+      window.clearInterval(intervalId);
     };
   }, [session.token]);
 
@@ -705,6 +824,9 @@ export function ProtectedShell({
                   coreFeatureRuntime,
                   coreFeatureLoadState,
                   coreFeatureErrorMessage,
+                  liveDemoRuntime,
+                  liveDemoLoadState,
+                  liveDemoErrorMessage,
                   pendingPresetId,
                   eventErrorMessage,
                   presetId => {

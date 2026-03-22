@@ -1,0 +1,75 @@
+{
+  "metrics": {
+    "endpointPath": "/__metrics",
+    "sampleLines": [
+      "http_requests_total{method=\"GET\",route=\"/api/system/health\",status_code=\"200\"} 4",
+      "services_registered_total 3",
+      "route_conflicts_total 0"
+    ],
+    "sampleMetricNames": [
+      "http_requests_total",
+      "services_registered_total",
+      "route_conflicts_total"
+    ],
+    "source": "content/preview/live-runtime.json",
+    "status": "available",
+    "updatedAt": "2026-03-22T00:00:00.000Z"
+  },
+  "scheduler": {
+    "enabled": true,
+    "intervalLabel": "Every 10 seconds",
+    "latestTick": "10:30:00",
+    "recentTicks": [
+      {
+        "isoTime": "2026-03-22T10:30:00.000Z",
+        "recordedAt": "2026-03-22T10:30:00.000Z",
+        "source": "scheduler",
+        "timeLabel": "10:30:00"
+      },
+      {
+        "isoTime": "2026-03-22T10:29:50.000Z",
+        "recordedAt": "2026-03-22T10:29:50.000Z",
+        "source": "scheduler",
+        "timeLabel": "10:29:50"
+      },
+      {
+        "isoTime": "2026-03-22T10:29:40.000Z",
+        "recordedAt": "2026-03-22T10:29:40.000Z",
+        "source": "scheduler",
+        "timeLabel": "10:29:40"
+      }
+    ],
+    "source": "content/preview/live-runtime.json"
+  },
+  "transport": {
+    "messages": [
+      {
+        "kind": "clock-tick",
+        "recordedAt": "2026-03-22T10:30:00.000Z",
+        "source": "scheduler",
+        "summary": "clock-tick · 10:30:00 · scheduler"
+      },
+      {
+        "kind": "event-bus-demo",
+        "recordedAt": "2026-03-22T10:29:55.000Z",
+        "source": "event-system",
+        "summary": "event-bus-demo · Greeting · Hello from the preview EventBus."
+      },
+      {
+        "kind": "clock-tick",
+        "recordedAt": "2026-03-22T10:29:50.000Z",
+        "source": "scheduler",
+        "summary": "clock-tick · 10:29:50 · scheduler"
+      }
+    ],
+    "note": "Preview mode mirrors the combined scheduler and EventBus backend feed while the live socket bridge is still introduced incrementally.",
+    "source": "content/preview/live-runtime.json",
+    "status": "Preview backend feed"
+  },
+  "websocket": {
+    "authMode": "jwt",
+    "note": "Preview mode keeps the shared feed visible first. The live websocket bridge is layered on top of the same backend feed.",
+    "path": "/socket.io",
+    "status": "Preview standby"
+  }
+}

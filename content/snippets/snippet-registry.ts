@@ -4,12 +4,14 @@ import liveDemoMessageSnippet from "./contracts/live-demo-message.ts?raw";
 import schedulerClockTickSnippet from "./contracts/scheduler-clock-tick.ts?raw";
 import authControllerLoginSnippet from "./server/auth-controller-login.ts?raw";
 import bootstrapMainSnippet from "./server/bootstrap-main.ts?raw";
+import clockDemoJobSnippet from "./server/clock-demo-job.ts?raw";
 import coreFeatureHooksSnippet from "./server/core-feature-hooks.ts?raw";
 import coreFeatureServicesSnippet from "./server/core-feature-services.ts?raw";
 import demoControllerCoreFeaturesSnippet from "./server/demo-controller-core-features.ts?raw";
 import eventDemoEmitterSnippet from "./server/event-demo-emitter.ts?raw";
 import jwtResponseSnippet from "./server/jwt-response.ts?raw";
 import systemHealthControllerSnippet from "./server/system-health-controller.ts?raw";
+import loadLiveDemoRuntimeSnippet from "./web/load-live-demo-runtime.ts?raw";
 import verifySessionSnippet from "./web/verify-session.ts?raw";
 
 export type SharedSnippetLanguage = "json" | "ts" | "tsx";
@@ -63,9 +65,9 @@ const snippetRegistry = {
     code: authControllerLoginSnippet.trim()
   },
   "controllers.demo-controller": {
-    title: "AP6 runtime demo controller",
+    title: "Runtime demo controller",
     description:
-      "The AP6 controller combines a public runtime snapshot endpoint with a JWT-protected EventBus trigger.",
+      "The demo controller combines the runtime snapshot endpoints with the JWT-protected EventBus trigger.",
     emphasis: "current",
     filePath: "apps/server/src/controllers/demo.controller.ts",
     language: "ts",
@@ -75,7 +77,7 @@ const snippetRegistry = {
   "hooks.registration": {
     title: "Lifecycle hook registration",
     description:
-      "AP6 registers concrete initialize, startup, preInit, postInit, and security hooks and records their execution.",
+      "The server registers concrete initialize, startup, preInit, postInit, and security hooks and records their execution.",
     emphasis: "current",
     filePath: "apps/server/src/lib/core-feature-demo.ts",
     language: "ts",
@@ -104,7 +106,7 @@ const snippetRegistry = {
   "services.registry": {
     title: "ServiceRegistry demo services",
     description:
-      "The AP6 startup hook registers in-memory services so the workspace can surface real registry entries.",
+      "The startup hook registers in-memory services so the workspace can surface real registry entries.",
     emphasis: "current",
     filePath: "apps/server/src/lib/core-feature-demo.ts",
     language: "ts",
@@ -121,6 +123,26 @@ const snippetRegistry = {
     sourceLabel: "Current implementation",
     code: eventDemoEmitterSnippet.trim()
   },
+  "scheduler.clock-job": {
+    title: "Scheduler clock job",
+    description:
+      "The current scheduler job emits one typed clock-tick event every ten seconds through the shared EventBus.",
+    emphasis: "current",
+    filePath: "apps/server/src/jobs/clockDemo.job.ts",
+    language: "ts",
+    sourceLabel: "Current implementation",
+    code: clockDemoJobSnippet.trim()
+  },
+  "live-demo.runtime-loader": {
+    title: "Live demo runtime loader",
+    description:
+      "The web client loads the scheduler, metrics, and transport state from one shared demo endpoint.",
+    emphasis: "current",
+    filePath: "apps/web/src/lib/live-demo-runtime.ts",
+    language: "ts",
+    sourceLabel: "Current implementation",
+    code: loadLiveDemoRuntimeSnippet.trim()
+  },
   "contracts.event-bus-demo": {
     title: "Planned payload shape",
     description:
@@ -132,23 +154,23 @@ const snippetRegistry = {
     code: eventBusDemoSnippet.trim()
   },
   "contracts.scheduler-clock-tick": {
-    title: "Planned message contract",
+    title: "Clock-tick message contract",
     description:
-      "The later scheduler demo uses a small payload shape that is easy to surface in both live and preview mode.",
+      "The scheduler demo uses a small payload shape that is easy to surface in both live and preview mode.",
     emphasis: "variant",
     filePath: "content/snippets/contracts/scheduler-clock-tick.ts",
     language: "ts",
-    sourceLabel: "Planned variant",
+    sourceLabel: "Supporting contract",
     code: schedulerClockTickSnippet.trim()
   },
   "contracts.live-demo-message": {
-    title: "Planned live message union",
+    title: "Shared live message union",
     description:
       "One message contract keeps clock events and EventBus updates renderable through the same UI feed.",
     emphasis: "variant",
     filePath: "content/snippets/contracts/live-demo-message.ts",
     language: "ts",
-    sourceLabel: "Planned variant",
+    sourceLabel: "Supporting contract",
     code: liveDemoMessageSnippet.trim()
   }
 } satisfies Record<string, SharedSnippetDescriptor>;

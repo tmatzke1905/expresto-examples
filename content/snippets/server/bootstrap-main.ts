@@ -1,7 +1,13 @@
 async function main(): Promise<void> {
+  registerCoreFeatureHooks();
+  registerLiveDemoHooks();
+
   const config = await loadConfig();
   const runtime = await createServer(config);
   const host = config.host ?? "0.0.0.0";
+
+  bindCoreFeatureRuntime(runtime.config, runtime.services, runtime.eventBus);
+  bindLiveDemoRuntime(runtime.config, runtime.services, runtime.eventBus);
 
   attachStaticWebApp({
     app: runtime.app,
