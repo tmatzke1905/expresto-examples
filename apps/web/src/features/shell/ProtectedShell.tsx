@@ -5,6 +5,7 @@ import {
   PageStatePanel
 } from "../pages/FeaturePageTemplate";
 import { getFeaturePageDescriptor } from "../pages/feature-page-content";
+import { previewDemoData } from "../../lib/preview-demo-data";
 import { runtimeFeatureCards, type RuntimeSnapshot } from "../../lib/runtime-snapshot";
 import type { FeatureMenuItem, SessionState } from "../../lib/session";
 
@@ -155,21 +156,17 @@ function renderFeatureDemo(
     return (
       <div className="demo-stack">
         <div className="demo-button-row">
-          <button className="secondary-button" disabled type="button">
-            Greeting
-          </button>
-          <button className="secondary-button" disabled type="button">
-            Warning
-          </button>
-          <button className="secondary-button" disabled type="button">
-            Info
-          </button>
+          {previewDemoData.eventSystem.presets.map(preset => (
+            <button className="secondary-button" disabled key={preset.label} type="button">
+              {preset.label}
+            </button>
+          ))}
         </div>
 
         <textarea
           className="token-viewer demo-textarea"
           readOnly
-          value="AP6/AP7 will route the EventBus result into this text field."
+          value={previewDemoData.eventSystem.selectedText}
         />
       </div>
     );
@@ -177,34 +174,56 @@ function renderFeatureDemo(
 
   if (feature.id === "scheduler") {
     return (
-      <div className="auth-flow-grid">
-        <article className="detail-card">
-          <span className="detail-card__label">Demo interval</span>
-          <strong>Every 10 seconds</strong>
-          <p>The planned scheduler job emits one visible clock-tick event.</p>
-        </article>
-        <article className="detail-card">
-          <span className="detail-card__label">Latest preview value</span>
-          <strong>--:--:--</strong>
-          <p>AP7 will replace this placeholder with the live server time feed.</p>
-        </article>
+      <div className="demo-stack">
+        <div className="auth-flow-grid">
+          <article className="detail-card">
+            <span className="detail-card__label">Demo interval</span>
+            <strong>{previewDemoData.scheduler.intervalLabel}</strong>
+            <p>The planned scheduler job emits one visible clock-tick event.</p>
+          </article>
+          <article className="detail-card">
+            <span className="detail-card__label">Latest preview value</span>
+            <strong>{previewDemoData.scheduler.latestTick}</strong>
+            <p>AP7 will replace this prepared value with the live server time feed.</p>
+          </article>
+        </div>
+
+        <div className="preview-feed-list">
+          {previewDemoData.scheduler.recentTicks.map(value => (
+            <div className="preview-feed-item" key={value}>
+              <strong>{value}</strong>
+              <span>Prepared scheduler tick for preview mode</span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 
   if (feature.id === "websocket") {
     return (
-      <div className="auth-flow-grid">
+      <div className="demo-stack">
+        <div className="auth-flow-grid">
         <article className="detail-card">
           <span className="detail-card__label">Connection state</span>
-          <strong>Planned</strong>
-          <p>The future socket view will show live connection state and transport errors.</p>
+          <strong>{previewDemoData.websocket.connectionState}</strong>
+          <p>The later socket view will replace this prepared state with the live transport state.</p>
         </article>
         <article className="detail-card">
           <span className="detail-card__label">Shared feed</span>
-          <strong>Clock + EventBus</strong>
-          <p>Scheduler ticks and EventBus updates will arrive through one visible message feed.</p>
+          <strong>{previewDemoData.websocket.transportLabel}</strong>
+          <p>Scheduler ticks and EventBus updates already share one prepared preview feed.</p>
         </article>
+        </div>
+
+        <div className="preview-feed-list">
+          {previewDemoData.websocket.messages.map(message => (
+            <div className="preview-feed-item" key={message}>
+              <strong>{message}</strong>
+              <span>Prepared preview message</span>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

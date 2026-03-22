@@ -2,7 +2,9 @@ import type { ReactNode } from "react";
 
 import type { RuntimeSnapshot } from "../../lib/runtime-snapshot";
 import type { FeatureMenuItem } from "../../lib/session";
+import { DocumentationNoteCard } from "./DocumentationNoteCard";
 import type { FeaturePageDescriptor } from "./feature-page-content";
+import { SnippetCard } from "./SnippetCard";
 
 type PageStatePanelProps = {
   body: string;
@@ -135,29 +137,7 @@ export function FeaturePageTemplate({
 
         <div className="snippet-stack">
           {page.codeExamples.map(example => (
-            <section className="snippet-card" key={`${example.filePath}-${example.title}`}>
-              <div className="snippet-card__header">
-                <div>
-                  <h3>{example.title}</h3>
-                  <p>{example.description}</p>
-                </div>
-
-                <div className="snippet-card__meta">
-                  <span
-                    className={`feature-badge${
-                      example.emphasis === "current" ? "" : " feature-badge--muted"
-                    }`}
-                  >
-                    {example.sourceLabel}
-                  </span>
-                  <span className="snippet-path">{example.filePath}</span>
-                </div>
-              </div>
-
-              <pre className={`snippet-block language-${example.language}`}>
-                <code>{example.code}</code>
-              </pre>
-            </section>
+            <SnippetCard example={example} key={`${example.filePath}-${example.title}`} />
           ))}
         </div>
       </article>
@@ -170,11 +150,7 @@ export function FeaturePageTemplate({
 
         <div className="documentation-grid">
           {page.documentation.map(note => (
-            <section className="documentation-card" key={`${note.reference}-${note.title}`}>
-              <span className="detail-card__label">{note.reference}</span>
-              <h3>{note.title}</h3>
-              <p>{note.body}</p>
-            </section>
+            <DocumentationNoteCard key={`${note.reference}-${note.title}`} note={note} />
           ))}
         </div>
       </article>

@@ -1,0 +1,37 @@
+{
+  "eventSystem": {
+    "presets": [
+      {
+        "label": "Greeting",
+        "text": "Hello from the preview EventBus. AP6 will emit this message through the backend first."
+      },
+      {
+        "label": "Warning",
+        "text": "Preview warning message prepared in AP5 so the later live flow can reuse the same visible text field."
+      },
+      {
+        "label": "Info",
+        "text": "Informational preview payload. The protected workspace already shows the exact UI shape for the final demo."
+      }
+    ],
+    "selectedText": "Hello from the preview EventBus. AP6 will emit this message through the backend first."
+  },
+  "scheduler": {
+    "intervalLabel": "Every 10 seconds",
+    "latestTick": "10:30:00",
+    "recentTicks": [
+      "10:30:00",
+      "10:29:50",
+      "10:29:40"
+    ]
+  },
+  "websocket": {
+    "connectionState": "Preview standby",
+    "transportLabel": "Prepared local feed",
+    "messages": [
+      "clock-tick · 10:30:00 · scheduler",
+      "event-bus-demo · Greeting · Hello from the preview EventBus.",
+      "clock-tick · 10:29:50 · scheduler"
+    ]
+  }
+}

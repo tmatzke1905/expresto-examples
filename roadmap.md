@@ -115,111 +115,31 @@ Preview mode:
 | Metrics & Observability   | Prometheus, telemetry, runtime visibility | `__metrics`, optional runtime info                    |
 | Public API & Contracts    | stable API surface and contracts          | types, contracts, copy-paste snippets                 |
 
-## Status Overview
+## Progress
 
-| Work package | Status      | Summary                                                                             |
-| ------------ | ----------- | ----------------------------------------------------------------------------------- |
-| AP1          | implemented | repository foundation, workspaces, preview target, base docs                        |
-| AP2          | implemented | `createServer()` bootstrap, JSON config, web delivery, preview build                |
-| AP3          | implemented | Basic login, JWT session, protected shell, preview session                          |
-| AP4          | implemented | responsive frontend foundation, shared page template, and mobile feature navigation |
-| AP5          | open        | shared system for documentation, snippets, and preview data                         |
-| AP6          | open        | core pages for routing, security, hooks, services, and event system                 |
-| AP7          | open        | live demos for scheduler, WebSocket, and observability                              |
-| AP8          | open        | public API and stable contracts as reference pages                                  |
-| AP9          | open        | QA, tests, preview validation, and final documentation                              |
+| Work package | Status | Main result | Evidence |
+| ------------ | ------ | ----------- | -------- |
+| AP1 | implemented | repository foundation with workspaces, preview target, shared TypeScript setup, and base docs | `docs/ap1-foundation.md` |
+| AP2 | implemented | `createServer()` bootstrap, JSON config loading, first controller endpoint, and static web delivery | `docs/ap2-bootstrap.md` |
+| AP3 | implemented | Basic Auth login, JWT session restoration, preview session, and protected shell access | `docs/ap3-auth-flow.md` |
+| AP4 | implemented | responsive application shell, feature navigation, and one shared page template for all feature pages | `docs/ap4-frontend-navigation.md` |
+| AP5 | implemented | shared content system for page copy, local snippets, copy actions, curated references, and preview demo data | `docs/ap5-content-system.md` |
+| AP6 | open | core pages for routing, security, hooks, services, and EventBus flows | roadmap section below |
+| AP7 | open | live demos for scheduler, WebSocket, and observability | roadmap section below |
+| AP8 | open | public API and stable contracts as reference pages | roadmap section below |
+| AP9 | open | QA, tests, preview validation, and final documentation | roadmap section below |
 
-## Current Progress
+### Next Focus
 
-### AP1
+AP6 is now the next delivery target.
 
-Completed:
+Current AP6 focus:
 
-- root workspace with `apps/server` and `apps/web`
-- structured content storage under `content/`
-- committed preview target `preview/`
-- shared Node.js and TypeScript baseline
-- documented design decisions in `docs/ap1-foundation.md`
-- repository validation through `npm run check:structure`
-
-### AP2
-
-Completed:
-
-- `createServer()` bootstrap in `apps/server/src/main.ts`
-- JSON runtime configuration in `apps/server/config/middleware.config.json`
-- first controller endpoint through `GET /api/system/health`
-- static web delivery from `apps/web/dist`
-- separate preview build written to `preview/`
-- root scripts for build and start
-- documented AP2 decisions in `docs/ap2-bootstrap.md`
-
-### AP3
-
-Completed:
-
-- Basic-protected login endpoint `POST /api/auth/login`
-- JWT-protected session endpoint `GET /api/auth/session`
-- login screen with visible demo credentials
-- JWT creation and session restoration in the frontend
-- protected application shell with feature menu and sign-out
-- preview session through `content/preview/auth-session.json`
-- documented AP3 decisions in `docs/ap3-auth-flow.md`
-
-### AP4
-
-Completed:
-
-- fixed application title applied consistently as `expresto-examples`
-- responsive app shell with desktop layout and mobile feature drawer
-- shared page structure for description, demo surface, code examples, and documentation notes
-- empty, loading, and planned-state surfaces for feature pages and runtime metadata
-- feature-specific AP4 content for overview, bootstrap, controllers, security, and planned live-demo pages
-- code examples shown in the UI with current implementation first and variants when useful
-- all repository-facing documentation and visible application text kept in English
-- documented AP4 decisions in `docs/ap4-frontend-navigation.md`
+- turn the existing placeholder pages into concrete runtime pages
+- add real examples for controllers, routing, hooks, services, and EventBus flows
+- keep using the AP5 content system instead of embedding new content in UI code
 
 ## Work Packages
-
-### AP4: Responsive Frontend Foundation And Feature Navigation
-
-Goal:
-Create a stable, mobile-friendly, and extensible UI structure.
-
-Scope:
-
-- build the application layout for desktop and mobile
-- implement the main navigation for all features
-- create one shared page template for title, description, demo, code, and documentation
-- define loading, error, and empty states
-- apply the fixed application title consistently across the UI
-- ensure all visible UI copy remains English
-
-Outcome:
-
-- responsive frontend foundation
-- consistent UX across all feature pages
-
-### AP5: Shared Documentation And Code Example System
-
-Goal:
-Feed the feature pages from reusable content building blocks.
-
-Scope:
-
-- define the format for feature content, for example Markdown or structured JSON/TS objects
-- store code snippets locally in the repository
-- curate documentation excerpts from the `expresto-server` docs
-- build shared components for snippet rendering, copy actions, and documentation references
-- manage static preview data for preview mode centrally
-- prepare predefined demo texts and example time events for the interactive UI demos
-- define how the current implementation is presented as the primary code example for each feature
-- define when and how additional variants are displayed
-
-Outcome:
-
-- central content basis for all pages
-- no runtime dependency on GitHub
 
 ### AP6: Core Pages For HTTP And Runtime Features
 
@@ -309,6 +229,7 @@ Outcome:
 
 ## Branch And Commit Strategy
 
+A separate branch must be created for every work package.
 Each work package uses its own branch with the `codex/` prefix.
 
 | Work package | Branch                               | Example completion commit message                                         |
@@ -325,6 +246,7 @@ Each work package uses its own branch with the `codex/` prefix.
 
 Working rules:
 
+- before implementation starts, a separate branch must be created for the work package
 - every work package is developed on its assigned `codex/...` branch
 - each work package ends with one clear completion commit
 - before the completion commit, the implementation must be clearly documented in code and documentation
