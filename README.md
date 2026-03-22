@@ -339,10 +339,27 @@ Nach Abschluss eines Arbeitspakets wird auf dem jeweiligen Branch ein inhaltlich
 | AP8 | `codex/ap8-public-api-und-contracts` | `Dokumentiere Public API und stabile Framework-Contracts in der Demo-App` |
 | AP9 | `codex/ap9-qa-und-dokumentation` | `Runde die Beispiel-App mit Tests, Preview-Build und Abschlussdoku ab` |
 
+## Dokumentationsregel Pro Arbeitspaket
+
+Jedes Arbeitspaket muss nicht nur implementiert, sondern auch sauber dokumentiert werden.
+
+Pflicht im Code:
+
+- neuer oder geaenderter Code muss klar strukturiert, sinnvoll benannt und bei nicht offensichtlicher Logik knapp kommentiert sein
+- Demo-Flows, Mock-Daten, Scheduler-, EventBus- und WebSocket-Verhalten muessen im Code nachvollziehbar auffindbar sein
+- neue Endpunkte, UI-Komponenten und Integrationsstellen sollen so benannt und organisiert werden, dass das Arbeitspaket im Repository leicht nachvollzogen werden kann
+
+Pflicht in der `README.md`:
+
+- fuer jedes abgeschlossene Arbeitspaket muss der umgesetzte Umfang kurz dokumentiert oder aktualisiert werden
+- wichtige Architekturentscheidungen, Abweichungen vom Plan und relevante Preview- oder Live-Demo-Besonderheiten muessen in der README festgehalten werden
+- wenn ein Arbeitspaket neue Start-, Build-, Test- oder Bedienhinweise einfuehrt, muessen diese in der README nachgezogen werden
+
 Arbeitsregel:
 
 - pro Arbeitspaket wird auf dem zugeordneten `codex/...`-Branch gearbeitet
 - nach Fertigstellung erfolgt genau ein klar formulierter Abschluss-Commit fuer das Arbeitspaket
+- vor dem Abschluss-Commit wird geprueft, dass die Umsetzung sowohl im Code als auch in der `README.md` sauber dokumentiert ist
 - anschliessend kann der Branch gemerged oder per Pull Request weiterverarbeitet werden
 
 ## Empfohlene Umsetzungsreihenfolge
