@@ -15,6 +15,12 @@
   --chip-background: rgba(255, 179, 107, 0.14);
   --surface-soft: rgba(255, 255, 255, 0.05);
   --surface-strong: rgba(6, 10, 15, 0.72);
+  --layout-sidebar-share: 20%;
+  --layout-content-share: 60%;
+  --layout-rail-share: 20%;
+  --layout-header-main-share: 75%;
+  --layout-header-side-share: 25%;
+  --layout-app-width: 1520px;
   --font-sans: "Avenir Next", "Segoe UI", "Trebuchet MS", sans-serif;
   --font-mono: "SF Mono", "Menlo", "Consolas", monospace;
   color: var(--text-primary);
@@ -57,6 +63,7 @@ textarea {
 }
 
 .shell--app {
+  width: min(100% - 2rem, var(--layout-app-width));
   display: grid;
   gap: 1rem;
 }
@@ -71,10 +78,13 @@ textarea {
 }
 
 .app-chrome {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    minmax(0, var(--layout-header-main-share))
+    minmax(0, var(--layout-header-side-share));
   align-items: center;
-  justify-content: space-between;
   gap: 1rem;
+  width: 100%;
   padding: 1rem 1.25rem;
   border-radius: 24px;
 }
@@ -102,6 +112,7 @@ textarea {
   justify-content: flex-end;
   gap: 0.75rem;
   align-items: center;
+  min-width: 0;
 }
 
 .hero {
@@ -149,14 +160,17 @@ textarea {
 }
 
 .app-hero__content {
-  display: flex;
+  display: grid;
+  grid-template-columns:
+    minmax(0, var(--layout-header-main-share))
+    minmax(0, var(--layout-header-side-share));
   align-items: flex-start;
-  justify-content: space-between;
   gap: 1rem;
 }
 
 .session-summary {
-  min-width: 280px;
+  width: 100%;
+  min-width: 0;
   padding: 1rem 1.1rem;
   border-radius: 24px;
   border: 1px solid rgba(124, 229, 205, 0.16);
@@ -342,12 +356,30 @@ textarea {
   color: #ffd7d7;
 }
 
-.workspace-layout {
+.workspace-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 290px minmax(0, 1fr) 320px;
+  grid-template-columns:
+    minmax(0, var(--layout-sidebar-share))
+    minmax(0, var(--layout-content-share))
+    minmax(0, var(--layout-rail-share));
+  grid-template-areas:
+    "sidebar topbar topbar"
+    "sidebar hero hero"
+    "sidebar content rail";
   gap: 1rem;
   align-items: start;
+}
+
+.workspace-grid > *,
+.detail-grid > *,
+.highlight-grid > *,
+.documentation-grid > *,
+.card-grid > *,
+.endpoint-list > *,
+.auth-flow-grid > *,
+.snippet-stack > * {
+  min-width: 0;
 }
 
 .navigation-panel,
@@ -357,8 +389,17 @@ textarea {
 }
 
 .navigation-panel {
+  grid-area: sidebar;
   display: grid;
   gap: 1rem;
+}
+
+.workspace-topbar {
+  grid-area: topbar;
+}
+
+.workspace-hero {
+  grid-area: hero;
 }
 
 .feature-nav {
@@ -399,10 +440,12 @@ textarea {
 }
 
 .content-stack--feature {
+  grid-area: content;
   align-content: start;
 }
 
 .info-rail {
+  grid-area: rail;
   display: grid;
   gap: 1rem;
 }
@@ -467,6 +510,17 @@ textarea {
 .state-panel p {
   margin: 0.55rem 0 0;
   color: var(--text-secondary);
+}
+
+.detail-card strong,
+.detail-card p,
+.feature-card p,
+.endpoint-card strong,
+.endpoint-card span,
+.panel__header p,
+.snippet-path,
+.source-chip {
+  overflow-wrap: anywhere;
 }
 
 .detail-card__label,
@@ -655,14 +709,18 @@ textarea {
   display: none;
 }
 
-@media (max-width: 1280px) {
-  .workspace-layout {
-    grid-template-columns: 290px minmax(0, 1fr);
+@media (max-width: 1380px) {
+  .workspace-grid {
+    grid-template-columns: minmax(260px, 28%) minmax(0, 72%);
+    grid-template-areas:
+      "sidebar topbar"
+      "sidebar hero"
+      "sidebar content"
+      "sidebar rail";
   }
 
   .info-rail {
     position: static;
-    grid-column: 2;
   }
 }
 
@@ -697,8 +755,19 @@ textarea {
     display: grid;
   }
 
-  .workspace-layout {
+  .app-chrome__actions,
+  .app-hero__content {
+    min-width: 0;
     grid-template-columns: 1fr;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "hero"
+      "content"
+      "rail";
   }
 
   .navigation-panel {
@@ -738,10 +807,6 @@ textarea {
 
   .nav-toggle {
     display: inline-flex;
-  }
-
-  .info-rail {
-    grid-column: auto;
   }
 }
 

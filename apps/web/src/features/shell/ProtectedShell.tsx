@@ -219,60 +219,7 @@ export function ProtectedShell({
 
   return (
     <main className="shell shell--app">
-      <section className="app-chrome">
-        <div className="app-brand">
-          <span className="app-brand__title">{applicationTitle}</span>
-          <span className="app-brand__subtitle">Example workspace for expresto-server</span>
-        </div>
-
-        <div className="app-chrome__actions">
-          <span className="hero__eyebrow">{modeLabel}</span>
-
-          <button
-            aria-expanded={isNavigationOpen}
-            className="secondary-button nav-toggle"
-            onClick={() => setIsNavigationOpen(open => !open)}
-            type="button"
-          >
-            {isNavigationOpen ? "Close menu" : "Feature menu"}
-          </button>
-
-          <button className="secondary-button" onClick={onLogout} type="button">
-            Sign out
-          </button>
-        </div>
-      </section>
-
-      <section className="hero hero--app">
-        <div className="app-hero__content">
-          <div>
-            <div className="hero__eyebrow">Authenticated workspace</div>
-            <h1>{selectedFeature?.title ?? "Feature map pending"}</h1>
-            <p className="hero__copy">
-              {selectedFeature?.summary ??
-                "The application could not resolve a feature entry. Check the shared navigation data."}
-            </p>
-            <p className="hero__supporting-copy">
-              The AP4 shell keeps every feature page consistent across title, demo area, code
-              examples, and documentation notes.
-            </p>
-          </div>
-
-          <div className="session-summary">
-            <span className="session-summary__label">Signed in as</span>
-            <div className="session-summary__identity">
-              <span className="session-avatar">{userInitials || "EX"}</span>
-              <div>
-                <strong>{session.user.displayName}</strong>
-                <span>{session.user.username}</span>
-                <span>{session.user.role}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="workspace-layout">
+      <section className="workspace-grid">
         <button
           aria-hidden={!isNavigationOpen}
           className={`drawer-scrim${isNavigationOpen ? " drawer-scrim--visible" : ""}`}
@@ -310,6 +257,59 @@ export function ProtectedShell({
             />
           )}
         </aside>
+
+        <section className="app-chrome workspace-topbar">
+          <div className="app-brand">
+            <span className="app-brand__title">{applicationTitle}</span>
+            <span className="app-brand__subtitle">Example workspace for expresto-server</span>
+          </div>
+
+          <div className="app-chrome__actions">
+            <span className="hero__eyebrow">{modeLabel}</span>
+
+            <button
+              aria-expanded={isNavigationOpen}
+              className="secondary-button nav-toggle"
+              onClick={() => setIsNavigationOpen(open => !open)}
+              type="button"
+            >
+              {isNavigationOpen ? "Close menu" : "Feature menu"}
+            </button>
+
+            <button className="secondary-button" onClick={onLogout} type="button">
+              Sign out
+            </button>
+          </div>
+        </section>
+
+        <section className="hero hero--app workspace-hero">
+          <div className="app-hero__content">
+            <div>
+              <div className="hero__eyebrow">Authenticated workspace</div>
+              <h1>{selectedFeature?.title ?? "Feature map pending"}</h1>
+              <p className="hero__copy">
+                {selectedFeature?.summary ??
+                  "The application could not resolve a feature entry. Check the shared navigation data."}
+              </p>
+              <p className="hero__supporting-copy">
+                The AP4 shell keeps every feature page consistent across title, demo area, code
+                examples, and documentation notes.
+              </p>
+            </div>
+
+            <div className="session-summary">
+              <span className="session-summary__label">Signed in as</span>
+              <div className="session-summary__identity">
+                <span className="session-avatar">{userInitials || "EX"}</span>
+                <div>
+                  <strong>{session.user.displayName}</strong>
+                  <span>{session.user.username}</span>
+                  <span>{session.user.role}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <section className="content-stack content-stack--feature">
           {selectedFeature && page ? (
