@@ -396,6 +396,22 @@ Das bedeutet:
 - vor der Installation oder Aktualisierung einer Bibliothek wird die aktuelle stabile Version noch einmal ueber die offizielle Paketquelle oder Hersteller-Dokumentation geprueft
 - installierte Abhaengigkeiten sollen anschliessend konkret gelockt werden, damit der Build reproduzierbar bleibt
 
+## Build-Regel Nach Jedem Lauf
+
+Nach jeder inhaltlichen Umsetzung wird die Anwendung gebaut, bevor ein
+Arbeitspaket abgeschlossen oder ein Zwischenstand uebergeben wird.
+
+Das bedeutet:
+
+- nach jeder relevanten Aenderung soll ein Build oder der jeweils passende
+  Projekt-Check ausgefuehrt werden
+- sobald Server- und Web-Build eingefuehrt sind, ist ein echter App-Build
+  Pflicht und nicht optional
+- solange in fruehen Arbeitspaketen noch kein vollstaendiger App-Build
+  existiert, wird mindestens der vorhandene Repo-Check ausgefuehrt, aktuell
+  `npm run check:structure`
+- Build- oder Check-Ergebnisse werden im Abschluss jedes Laufs kurz benannt
+
 Pflicht im Code:
 
 - neuer oder geaenderter Code muss klar strukturiert, sinnvoll benannt und bei nicht offensichtlicher Logik knapp kommentiert sein
@@ -413,6 +429,7 @@ Arbeitsregel:
 - pro Arbeitspaket wird auf dem zugeordneten `codex/...`-Branch gearbeitet
 - nach Fertigstellung erfolgt genau ein klar formulierter Abschluss-Commit fuer das Arbeitspaket
 - vor dem Abschluss-Commit wird geprueft, dass die Umsetzung sowohl im Code als auch in der `README.md` sauber dokumentiert ist
+- vor dem Abschluss eines Laufs wird immer ein Build oder der passende Projekt-Check ausgefuehrt
 - anschliessend kann der Branch gemerged oder per Pull Request weiterverarbeitet werden
 
 ## Empfohlene Umsetzungsreihenfolge
